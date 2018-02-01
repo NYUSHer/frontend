@@ -32,7 +32,7 @@ export class ListRowComponent extends Component {
             <TouchableHighlight
                 underlayColor='#F4F4F4'
                 style={{
-                    padding: 10,
+                    paddingVertical: 10,
                     backgroundColor: "#FFFFFF",
                     borderBottomWidth: 1,
                     borderColor: '#FAFAFA'
