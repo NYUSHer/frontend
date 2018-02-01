@@ -6,7 +6,7 @@
 ## Callback Standard
 
 ### Return Standard
-```json
+```javascript
 {
     state: true || false,
     ....,
