@@ -5,11 +5,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Title, PostListView, SubFrame } from "./SubComponents.js";
 import { Post } from "./InnerPage/Post.js";
 
-let list3 = {};
+let forumData = {};
 export var ForumNavigator = null;
 
 for (var i = 0; i < 10; i++) {
-    list3[i] = {
+    forumData[i] = {
         title: "This is the title " + (i + 1),
         id: i,
         content: "this is a bref content. this is a bref content. this is a bref content.",
@@ -33,14 +33,14 @@ export class ForumList extends Component {
     constructor() {
         super();
         this.state = {
-            data: list3 //this.props.data
+            data: forumData //this.props.data
         };
     }
 
     _onSelect(e) {
-        // list3[e.id].title = "Clicked.";
+        // forumData[e.id].title = "Clicked.";
         this.setState({
-            data: list3
+            data: forumData
         })
         this.props.navigation.navigate("Post", {id: e.id, raw: e});
         // ForumNavigator.navigate("Post", {id: e.id});

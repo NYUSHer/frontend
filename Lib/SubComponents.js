@@ -96,6 +96,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 32,
         color: "#35A7FF",
-        fontFamily: GlobalFont
+        // fontFamily: GlobalFont
     },
 });
