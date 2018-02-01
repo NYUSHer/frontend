@@ -6,12 +6,15 @@ import { Title, PostListView, SubFrame } from "./SubComponents.js";
 import { Post } from "./InnerPage/Post.js";
 
 let list3 = {};
+export var ForumNavigator = null;
+
 for (var i = 0; i < 10; i++) {
     list3[i] = {
         title: "This is the title " + (i + 1),
         id: i,
-        content: "this is a bref content.",
-        img: null
+        content: "this is a bref content. this is a bref content. this is a bref content.",
+        img: "https://storage-1.nya.vc/3n6EvDoG",
+        author: "NHibiki",
     };
 }
 
@@ -35,17 +38,16 @@ export class ForumList extends Component {
     }
 
     _onSelect(e) {
-        list3[e.id].title = "Clicked.";
+        // list3[e.id].title = "Clicked.";
         this.setState({
             data: list3
         })
-        this.props.navigation.navigate("Post", {id: e.id});
+        this.props.navigation.navigate("Post", {id: e.id, raw: e});
+        // ForumNavigator.navigate("Post", {id: e.id});
     }
 
     render() {
-        const {
-            navigate
-        } = this.props.navigation;
+        ForumNavigator = this.props.navigation;
         return (
             <SubFrame>
                 <Title value="Forum"></Title>

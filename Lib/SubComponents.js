@@ -4,10 +4,12 @@ import { Button, StyleSheet, TouchableHighlight, Platform, ScrollView, StatusBar
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SortableListView from 'react-native-sortable-listview'
 
+export const GlobalFont = "QuickSand";
+
 export class SubFrame extends Component {
     render() {
         return (
-            <ScrollView style={{marginTop:20, marginBottom:60}}>{this.props.children}</ScrollView>
+            <ScrollView style={{marginTop:20, marginBottom:0}}>{this.props.children}</ScrollView>
         );
     }
 }
@@ -31,16 +33,18 @@ export class ListRowComponent extends Component {
                 underlayColor='#F4F4F4'
                 style={{
                     padding: 10,
-                    paddingHorizontal: 40,
                     backgroundColor: "#FFFFFF",
                     borderBottomWidth: 1,
                     borderColor: '#FAFAFA'
                 }}
                 onPress={this._onPress}>
-                <View>
-                    
-                    <Text style={{fontSize: 18}}>{this.props.data.title}</Text>
-                    <Text style={{fontSize: 12}}>{this.props.data.content}</Text>
+                <View style={{flexDirection: "row", marginHorizontal: 30, marginRight: 70}}>
+                    {/* <Text style={{fontSize: 30, fontFamily: GlobalFont, width: 20}}>{this.props.data.id}</Text> */}
+                    <Image style={{width: 40, height: 40, borderRadius: 20}} source={{uri: this.props.data.img}}/>
+                    <View style={{marginLeft: 15}}>
+                        <Text style={{fontSize: 18, fontFamily: GlobalFont}} numberOfLines={1}>{this.props.data.title}</Text>
+                        <Text style={{fontSize: 12, fontFamily: GlobalFont}} numberOfLines={1}>{this.props.data.content}</Text>
+                    </View>
                 </View>
             </TouchableHighlight>
         )
@@ -77,17 +81,21 @@ export class PostListView extends Component {
 
 export const globalStyle = StyleSheet.create({
     navTag: {
-        fontFamily: "QuickSand"
-    }
+        fontFamily: GlobalFont
+    },
+    center: {
+        marginHorizontal: 30,
+        marginRight: 70,
+    },
 });
 
 const styles = StyleSheet.create({
     Title: {
         margin: 30,
-        marginBottom: 10,
+        marginBottom: 20,
         fontWeight: "bold",
         fontSize: 32,
         color: "#35A7FF",
-        // fontFamily: "QuickSand"
+        fontFamily: GlobalFont
     },
 });

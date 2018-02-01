@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { Button, Platform, ScrollView, StatusBar, View, Text } from 'react-native';
-import { TabNavigator } from 'react-navigation';
+import { TabNavigator, StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Dashboard } from "./Dashboard.js";
 import { Moment } from "./Moment.js";
 import { Forum } from "./Forum.js";
-import { globalStyle } from "./SubComponents.js";
+import { globalStyle, GlobalFont } from "./SubComponents.js";
+import { Login } from "./InnerPage/Login.js";
 
-export const MainApp = TabNavigator({
+export const MainAppEntry = TabNavigator({
     Dashboard: {
         screen: Dashboard
     },
@@ -26,12 +27,32 @@ export const MainApp = TabNavigator({
         activeTintColor: Platform.OS === 'ios' ? '#FF5964' : '#FFF',
         labelStyle: {
             fontSize: 14,
-            fontFamily: "QuickSand",
+            fontFamily: GlobalFont,
             marginBottom: 5,
         },
         style: {
-            height: 0,
+            height: 60,
             backgroundColor: "#FFF",
         }
     },
 });
+
+export const MainApp = StackNavigator(
+    {
+        MainScreen: {
+            screen: MainAppEntry,
+        },
+        Login: {
+            screen: Login,
+            path: 'login',
+        },
+    },
+    {
+        initialRouteName: 'MainScreen',
+        headerMode: 'none',
+        mode: 'modal',
+        cardStyle: {
+            backgroundColor: "#FFF",
+        },
+    }
+);
