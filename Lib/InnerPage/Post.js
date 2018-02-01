@@ -4,6 +4,7 @@ import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Title, SubFrame, GlobalFont, globalStyle } from "../SubComponents.js";
 
+var goBackToList = null;
 export class Post extends Component {
     static navigationOptions = {
         tabBarLabel: 'Home',
@@ -14,13 +15,20 @@ export class Post extends Component {
               style={{ color: tintColor }}
             />
         ),
+        tabBarOnPress: ({ previousScene, scene, jumpToIndex }) => {
+            if (previousScene.index == scene.index) {
+                if (goBackToList) goBackToList();
+            } else {
+                jumpToIndex(scene.index);
+            }
+        }
     };
-    
+
     render() {
         const {
             goBack, state
         } = this.props.navigation;
-        
+        goBackToList = this.props.navigation.goBack;
         return (
             <SubFrame>
                 <View style={[{flexDirection: "row", marginTop: 30, marginBottom: 10,}, globalStyle.center]}>
