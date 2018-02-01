@@ -1,7 +1,7 @@
 import { AsyncStorage } from 'react-native';
 
 export const BASEURL = "https://nyusher.nya.vc";
-export var Me = new User();
+export var Me = null;
 
 /*
  * -1: processing
@@ -10,6 +10,9 @@ export var Me = new User();
  */
 export var CurrentState = 0;
 
+/*
+ * Global Token-With Http Post Func
+ */
 export var HttpPost = (route, data, callback) => {
     fetch(`${BASEURL}${route}`, {
         method: 'POST',
@@ -31,7 +34,7 @@ export var HttpPost = (route, data, callback) => {
     });
 }
 
-export async AsyncHttpPost = (route, data) => {
+export async function AsyncHttpPost(route, data) {
     try {
         let response = await fetch(`${BASEURL}${route}`, {
             method: 'POST',
@@ -53,7 +56,7 @@ export async AsyncHttpPost = (route, data) => {
             }
         }
     }
-}
+};
 
 export class User {
     
@@ -61,7 +64,7 @@ export class User {
      * init user, if with id, then fetch the userinfo from server.
      */
     constructor(uid="") {
-        init();
+        this.init();
         if (uid) {
             this.uid = uid;
             this.fetchInfo();
@@ -148,7 +151,7 @@ export var getMe = (callback) => {
         } else {
             CurrentState = -1;
             if (data.errorCode != 102) {
-                setMeInfoFromStorage("", "");
+                setMeInfoToStorage("", "");
                 Me.init();
                 CurrentState = 0;
             }
@@ -157,7 +160,7 @@ export var getMe = (callback) => {
     })
 }
 
-export var Login = (loginInfo, callback, byMail = false) => {
+export var login = (loginInfo, callback, byMail = false) => {
     Me.init();
     Me.email = loginInfo.email;
     Me.passwdtoken = byMail ? "NYUSHer_by_email_login" : loginInfo.passwdtoken;
@@ -169,7 +172,7 @@ export var Login = (loginInfo, callback, byMail = false) => {
         if (state) {
             Me.uid = data.uid;
             Me.token = data.token;
-            setMeInfoFromStorage(Me.uid, Me.token);
+            setMeInfoToStorage(Me.uid, Me.token);
             getMe(callback);
         } else {
             callback(false, data);
@@ -177,7 +180,7 @@ export var Login = (loginInfo, callback, byMail = false) => {
     });
 }
 
-export var setMeInfoFromStorage = (uid, token) => {
+export var setMeInfoToStorage = (uid, token) => {
     AsyncStorage.setItem("me", JSON.stringify({
         uid: uid,
         token: token,
@@ -186,7 +189,7 @@ export var setMeInfoFromStorage = (uid, token) => {
     });
 }
 
-export var getMeInfoFromStorage = (uid, token) => {
+export async function getMeInfoFromStorage (uid, token) {
     try {
         let myInfo = await AsyncStorage.getItem("me");
         let myInfoJson = JSON.parse(myInfo);
@@ -198,5 +201,6 @@ export var getMeInfoFromStorage = (uid, token) => {
     }
 }
 
+Me = new User();
 getMeInfoFromStorage();
 getMe();

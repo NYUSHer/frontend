@@ -7,6 +7,7 @@ import { Moment } from "./Moment.js";
 import { Forum } from "./Forum.js";
 import { globalStyle, GlobalFont } from "./SubComponents.js";
 import { Login } from "./InnerPage/Login.js";
+import { Me, CurrentState } from "./Util.js";
 
 export const MainAppEntry = TabNavigator({
     Dashboard: {
@@ -37,10 +38,23 @@ export const MainAppEntry = TabNavigator({
     },
 });
 
+export class MainAppEntryWrapper extends Component {
+    componentWillMount() {
+        let { navigate } = this.props.navigation;
+        if ( CurrentState != 1) {
+            navigate("Login");
+        }
+    }
+    
+    render() {
+        return (<MainAppEntry />);
+    }
+}
+
 export const MainApp = StackNavigator(
     {
         MainScreen: {
-            screen: MainAppEntry,
+            screen: MainAppEntryWrapper,
         },
         Login: {
             screen: Login,
@@ -51,6 +65,9 @@ export const MainApp = StackNavigator(
         initialRouteName: 'MainScreen',
         headerMode: 'none',
         mode: 'modal',
+        navigationOptions: {
+            // gesturesEnabled: false,
+        },
         cardStyle: {
             backgroundColor: "#FFF",
         },
