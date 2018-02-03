@@ -37,7 +37,8 @@ export class Post extends Component {
                         style={{
                             margin: 30,
                             marginBottom: 20,
-                            marginRight: 0,
+                            marginRight: -10,
+                            paddingHorizontal: 10
                         }}
                     >
                         <Ionicons
@@ -48,11 +49,11 @@ export class Post extends Component {
                     </TouchableOpacity>
                     <View style={[{flexDirection: "row", marginTop: 30, marginBottom: 10,}]}>
                     {/* <Text style={{fontSize: 30, fontFamily: GlobalFont, width: 20}}>{this.props.data.id}</Text> */}
-                    <Image style={{width: 40, height: 40, borderRadius: 20, marginLeft: 10}} source={{uri: state.params.raw.img}}/>
-                    <View style={{marginLeft: 5}}>
-                        <Text style={{fontSize: 18, fontFamily: GlobalFont, fontWeight: "bold", fontSize: 32,}} numberOfLines={1}>{state.params.raw.title}</Text>
+                    {/* <Image style={{width: 40, height: 40, borderRadius: 20}} source={{uri: state.params.raw.img}}/> */}
+                        <View style={{marginLeft: 15}}>
+                            <Text style={{fontSize: 18, fontFamily: GlobalFont, fontWeight: "bold", fontSize: 32,}} numberOfLines={1}>{state.params.raw.title}</Text>
+                        </View>
                     </View>
-                </View>
                 </View>
                 <Text style={[{fontSize: 12, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]} numberOfLines={1}>{state.params.raw.content}</Text>
             </SubFrame>

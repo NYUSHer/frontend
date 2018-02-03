@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
-import { Button, StyleSheet, TouchableHighlight, Platform, ScrollView, StatusBar, View, Text, Image } from 'react-native';
+import { Button, StyleSheet, TouchableOpacity, TouchableHighlight, Platform, ScrollView, StatusBar, View, Text, Image, TextInput } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SortableListView from 'react-native-sortable-listview'
 
 export const GlobalFont = "QuickSand";
+export const GlobalColor = {
+    "blue"  : "#35A7FF",
+    "red"   : "#FF5964",
+    "yellow": "#FFE74C",
+    "yellow_dark": "#FFA72C",
+}
 
 export class SubFrame extends Component {
     render() {
@@ -79,6 +85,86 @@ export class PostListView extends Component {
     }
 }
 
+export class ExInput extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { text: '' };
+    }
+
+    _onchange(text) {
+        this.setState({text: text});
+        if (this.props.onchange) {
+            this.props.onchange(this.props.id, text, this);
+        }
+    }
+
+    render() {
+        return (
+            <View>
+                <TextInput 
+                    style={styles.ExInput}
+                    placeholder={this.props.name}
+                    autoCorrect={false}
+                    keyboardType={this.props.type == "passwd" ? "email-address" : this.props.type}
+                    secureTextEntry={this.props.type == "passwd" ? true : false}
+                    multiline={false}
+                    onChangeText={(e) => {this._onchange(e)}}
+                    value={this.state.text}
+                />
+            </View>
+        )
+    }
+}
+
+export class ExInputText extends Component {
+    render() {
+        return (
+            <View>
+                <Text
+                    style={styles.ExInputText}
+                >{this.props.children}</Text>
+            </View>
+        )
+    }
+}
+
+export class ExHint extends Component {
+    render() {
+        return (
+            <View>
+                <Text
+                    style={[styles.ExHint, {color: this.props.color ? this.props.color : GlobalColor.yellow_dark}]}
+                    // numberOfLines={2}
+                >{this.props.hasOwnProperty("show") ? (this.props.show == false ? "" : this.props.text) : this.props.text}</Text>
+            </View>
+        )
+    }
+}
+
+export class ExButton extends Component {
+    render() {
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => { if (this.props.onpress) this.props.onpress(this.props.id); }}
+                    style={styles.ExButton}
+                    disabled={this.props.disabled ? this.props.disabled : false}
+                >
+                    <Text style={styles.ExButtonText}>{this.props.children}</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+}
+
+export class Br extends Component {
+    render() {
+        return (
+            <View style={{height: this.props.h}}></View>
+        )
+    }
+}
+
 export const globalStyle = StyleSheet.create({
     navTag: {
         fontFamily: GlobalFont
@@ -97,5 +183,42 @@ const styles = StyleSheet.create({
         fontSize: 32,
         color: "#35A7FF",
         // fontFamily: GlobalFont
+    },
+    ExInput: {
+        height: 40,
+        fontFamily: GlobalFont,
+        fontWeight: "bold",
+        marginHorizontal: 30,
+        fontSize: 22,
+    },
+    ExInputText: {
+        height: 20,
+        fontFamily: GlobalFont,
+        fontWeight: "bold",
+        color: "#888",
+        marginHorizontal: 30,
+        fontSize: 18,
+    },
+    ExHint: {
+        height: 40,
+        fontFamily: GlobalFont,
+        color: GlobalColor.yellow_dark,
+        marginHorizontal: 30,
+        fontSize: 16,
+    },
+    ExButton: {
+        height: 45,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#DDD",
+        marginHorizontal: 30,
+        borderRadius: 8,
+    },
+    ExButtonText: {
+        color: "#FFF",
+        fontSize: 22,
+        fontWeight: "bold",
+        fontFamily: GlobalFont,
+        marginHorizontal: "auto",
     },
 });

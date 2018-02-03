@@ -1,4 +1,4 @@
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage, Alert } from 'react-native';
 
 export const BASEURL = "https://nyusher.nya.vc";
 export var Me = null;
@@ -9,6 +9,13 @@ export var Me = null;
  *  0: no login
  */
 export var CurrentState = 0;
+
+/*
+ * turn passwd into token
+ */
+export var PasswdTokenfy = (passwd) => {
+    return passwd;
+} 
 
 /*
  * Global Token-With Http Post Func
@@ -61,7 +68,7 @@ export async function AsyncHttpPost(route, data) {
 export class User {
     
     /*
-     * init user, if with id, then fetch the userinfo from server.
+     * init user, if with uid, then fetch the userinfo from server.
      */
     constructor(uid="") {
         this.init();
@@ -111,7 +118,7 @@ export class User {
      * update userinfo to server.
      */
     setInfo(callback) {
-        if (this.id != Me.id) {
+        if (this.uid != Me.uid) {
             callback(false, "Illegal Operation.");
             return;
         }
@@ -143,7 +150,7 @@ export class User {
  *      103: uid 对应的用户不存在
  */
 export var getMe = (callback) => {
-    if (!Me.id || !Me.token) return;
+    if (!Me.uid || !Me.token) return;
     Me.fetchInfo((state, data) => {
         if (state) {
             CurrentState = 1;
@@ -160,14 +167,23 @@ export var getMe = (callback) => {
     })
 }
 
+/*
+ * 51: empty email
+ * 52: invalid email
+ * 53: non-nyu email
+ */
 export var login = (loginInfo, callback, byMail = false) => {
     Me.init();
+    if (!loginInfo.email) {
+        callback(false, {errorCode: 51, errorMsg: "Please input your email."});
+        return;
+    }
     Me.email = loginInfo.email;
-    Me.passwdtoken = byMail ? "NYUSHer_by_email_login" : loginInfo.passwdtoken;
+    Me.passwdtoken = byMail ? "NYUSHer_by_email_login" : PasswdTokenfy(loginInfo.passwdtoken);
 
     HttpPost("/user/login", {
-        email: loginInfo.email,
-        passwdtoken: byMail ? "NYUSHer_by_email_login" : loginInfo.passwdtoken,
+        email: Me.email,
+        passwdtoken: Me.passwdtoken,
     }, (state, data) => {
         if (state) {
             Me.uid = data.uid;
@@ -203,4 +219,3 @@ export async function getMeInfoFromStorage (uid, token) {
 
 Me = new User();
 getMeInfoFromStorage();
-getMe();
