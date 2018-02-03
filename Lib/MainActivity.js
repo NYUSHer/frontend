@@ -22,6 +22,7 @@ export const MainAppEntry = TabNavigator({
 },{
     initialRouteName: 'Main',
     animationEnabled: true,
+    tabBarPosition: 'top',
     swipeEnabled: true,
     backBehavior: 'Main',
     tabBarOptions: {

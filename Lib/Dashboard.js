@@ -10,7 +10,7 @@ export class UserFrame extends Component {
         return (
             <View style={{
                 alignSelf: 'stretch',
-                height: 60,
+                height: 55,
                 justifyContent: 'flex-start',
                 flexDirection: 'row',
                 marginHorizontal: 15,
