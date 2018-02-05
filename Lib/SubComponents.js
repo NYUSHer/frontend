@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Button, StyleSheet, TouchableOpacity, TouchableHighlight, Platform, ScrollView, StatusBar, View, Text, Image, TextInput } from 'react-native';
+import { Button, StyleSheet, TouchableOpacity, RefreshControl, TouchableHighlight, Platform, ScrollView, StatusBar, View, Text, Image, TextInput } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SortableListView from 'react-native-sortable-listview'
 
-export const GlobalFont = "QuickSand";
+export const GlobalFont = (Platform.OS === 'ios' ? "QuickSand" : "Quicksand-Bold");
 export const GlobalColor = {
     "blue"  : "#35A7FF",
     "red"   : "#FF5964",
@@ -15,7 +15,11 @@ export const GlobalColor = {
 export class SubFrame extends Component {
     render() {
         return (
-            <ScrollView style={{marginTop:20, marginBottom:0}}>{this.props.children}</ScrollView>
+            <View 
+                style={{marginTop:20, marginBottom:0, flex: 1}}
+            >
+                {this.props.children}
+            </View>
         );
     }
 }
@@ -58,12 +62,36 @@ export class ListRowComponent extends Component {
 }
 
 export class PostListView extends Component {
-    
-    componentWillMount() {
-        this.setState({
+
+    constructor(props) {
+        super(props);
+        this.state = {
             data: this.props.data,
-        });
+            refreshing: false,
+            isLoadingTail: false,
+        };
     }
+    
+    _onRefresh() {
+        this.setState({refreshing: true});
+        if (this.props.onrefresh) {
+            this.props.onrefresh(() => {
+                this.setState({refreshing: false});
+            })
+        }
+    }
+
+    _endReached = () => {
+        if(this.state.isLoadingTail) {
+          return;
+        }
+        this.setState({isLoadingTail: true});
+        if (this.props.onmore) {
+            this.props.onmore(() => {
+                this.setState({isLoadingTail: false});
+            })
+        }
+      }
 
     render() {
         let order = Object.keys(this.props.data);
@@ -75,6 +103,13 @@ export class PostListView extends Component {
                 }}
                 data={this.state.data}
                 order={order}
+                onEndReached={() => {this._endReached()}}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={this.state.refreshing}
+                        onRefresh={this._onRefresh.bind(this)}
+                    />
+                }
                 // onRowMoved={e => {
                 //     order.splice(e.to, 0, order.splice(e.from, 1)[0]);
                 //     this.forceUpdate();

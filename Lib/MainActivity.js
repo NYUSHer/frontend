@@ -22,7 +22,7 @@ export const MainAppEntry = TabNavigator({
 },{
     initialRouteName: 'Main',
     animationEnabled: true,
-    tabBarPosition: 'bottom',
+    // tabBarPosition: 'bottom',
     showIcon: true,
     swipeEnabled: true,
     backBehavior: 'Main',
@@ -31,6 +31,7 @@ export const MainAppEntry = TabNavigator({
         labelStyle: {
             fontSize: 14,
             fontFamily: GlobalFont,
+            // color: '#888',
             marginBottom: 5,
         },
         style: {

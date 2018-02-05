@@ -1,6 +1,7 @@
 import { AsyncStorage, Alert } from 'react-native';
+import Forge from 'node-forge';
 
-export const BASEURL = "https://nyusher.nya.vc";
+export const BASEURL = "http://nyusher.nya.vc:8080/";
 export var Me = null;
 
 /*
@@ -14,8 +15,10 @@ export var CurrentState = 0;
  * turn passwd into token
  */
 export var PasswdTokenfy = (passwd) => {
-    return passwd;
-} 
+    var md = forge.md.md5.create();
+    md.update(passwd);
+    return md.digest().toHex();
+}
 
 /*
  * Global Token-With Http Post Func
