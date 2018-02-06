@@ -65,12 +65,12 @@ export class Login extends Component {
             email: "",
             passwd: "",
             btn: CurrentState == -1 ? false : true,
-            btnword: "Login",
-            func: 1,
+            btnword: "Login / Register",
+            func: 2,
         }
         
         getMeInfoFromStorage(() => {
-            if (Me.uid != "" && Me.token != "") {
+            if (Me.userid != "" && Me.token != "") {
                 console.log("Verify Last Login.");
                 getMe((state, data) => {
                     this.setState({btn: CurrentState == -1 ? false : true});
@@ -118,7 +118,7 @@ export class Login extends Component {
                 <ExInput id="passwd" name="Password" type="passwd" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.passwd}/>
                 <ExHint show={this.state.showHint} text={this.state.hintText} color={this.state.hintColor}/>
                 <Br h={50}/>
-                <ExButton id="login" disabled={!this.state.btn} onpress={(id) => {this._onpress(id);}}>{this.state.btn ? this.state.btnword : "Verifying ..."}</ExButton>
+                <ExButton id="login" color={this.state.func == 1 ? "#8F8" : "#DDD"} disabled={!this.state.btn} onpress={(id) => {this._onpress(id);}}>{this.state.btn ? this.state.btnword : "Verifying ..."}</ExButton>
             </SubFrame>
         );
     }

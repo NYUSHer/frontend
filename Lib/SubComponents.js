@@ -194,7 +194,7 @@ export class ExButton extends Component {
             <View>
                 <TouchableOpacity
                     onPress={() => { if (this.props.onpress) this.props.onpress(this.props.id); }}
-                    style={styles.ExButton}
+                    style={[styles.ExButton, {backgroundColor: this.props.color ? this.props.color : "#DDD"}]}
                     disabled={this.props.disabled ? this.props.disabled : false}
                 >
                     <Text style={styles.ExButtonText}>{this.props.children}</Text>

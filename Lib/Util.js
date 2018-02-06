@@ -43,14 +43,17 @@ export var PasswdOfflineValidationCheck = (passwd) => {
  * Global Token-With Http Post Func
  */
 export var HttpPost = (route, data, callback) => {
+    let formData = new FormData();
+    for (var k in data) {
+        formData.append(k, data[k]);
+    }
     fetch(`${BASEURL}${route}`, {
         method: 'POST',
-        mode: 'cors',
         headers: {
             'token': Me.token,
-            'uid'  : Me.uid,
+            'userid'  : Me.userid,
         },
-        body: JSON.stringify(data),
+        body: formData,
     }).then((response) => response.json())
       .then((jsonData) => {
         if (jsonData.state) {
@@ -59,6 +62,8 @@ export var HttpPost = (route, data, callback) => {
             callback(false, jsonData.error);
         }
     }).catch((error)=> {
+        console.log("get Error:");
+        console.log(error);
         callback(false, {errorCode: -1, errorMsg: "Network Error."});
     });
 }
@@ -70,7 +75,7 @@ export async function AsyncHttpPost(route, data) {
             mode: 'cors',
             headers: {
                 'token': Me.token,
-                'uid'  : Me.uid,
+                'userid'  : Me.userid,
             },
             body: JSON.stringify(data),
         });
@@ -90,12 +95,12 @@ export async function AsyncHttpPost(route, data) {
 export class User {
     
     /*
-     * init user, if with uid, then fetch the userinfo from server.
+     * init user, if with userid, then fetch the userinfo from server.
      */
-    constructor(uid="") {
+    constructor(userid="") {
         this.init();
-        if (uid) {
-            this.uid = uid;
+        if (userid) {
+            this.userid = userid;
             this.fetchInfo();
         }
     }
@@ -104,7 +109,7 @@ export class User {
      * init current class.
      */
     init() {
-        this.uid = "";
+        this.userid = "";
         this.username = "";
         this.email = "";
         this.avatar = "";
@@ -117,12 +122,12 @@ export class User {
      * fetch the userinfo from server.
      */
     fetchInfo(callback) {
-        if (!this.uid) {
+        if (!this.userid) {
             callback(false, "Unknown User.");
             return;
         }
-        HttpPost("/user/info", {
-            uid: this.uid,
+        HttpPost("/auth/info", {
+            userid: this.userid,
         }, (state, data) => {
             if (state) {
                 this.username = data.username;
@@ -140,11 +145,11 @@ export class User {
      * update userinfo to server.
      */
     setInfo(callback) {
-        if (this.uid != Me.uid) {
+        if (this.userid != Me.userid) {
             callback(false, "Illegal Operation.");
             return;
         }
-        HttpPost("/user/set", {
+        HttpPost("/auth/set", {
             username: this.username,
             avatar: this.avatar,
             motto: this.motto,
@@ -169,10 +174,10 @@ export class User {
  * Error Code:
  *      101: Token 无效
  *      102: E-mail 登录未验证
- *      103: uid 对应的用户不存在
+ *      103: userid 对应的用户不存在
  */
 export var getMe = (callback) => {
-    if (!Me.uid || !Me.token) return;
+    if (!Me.userid || !Me.token) return;
     Me.fetchInfo((state, data) => {
         if (state) {
             CurrentState = 1;
@@ -204,16 +209,17 @@ export var login = (loginInfo, callback, byMail = false, param="login") => {
     Me.passwdtoken = byMail ? "NYUSHer_by_email_login" : PasswdTokenfy(loginInfo.passwd);
 
     // Export Debugging Message
-    console.log("Login with: " + `email=${Me.email}&` + `passwdtoken=${Me.passwdtoken}`);
+    //console.log("Login with: " + `email=${Me.email}&` + `passwdtoken=${Me.passwdtoken}`);
 
-    HttpPost("/user/" + param, {
+    HttpPost("/auth/" + param, {
         email: Me.email,
         passwdtoken: Me.passwdtoken,
     }, (state, data) => {
         if (state) {
-            Me.uid = data.uid;
+            console.log(data);
+            Me.userid = data.userid;
             Me.token = data.token;
-            setMeInfoToStorage(Me.uid, Me.token);
+            setMeInfoToStorage(Me.userid, Me.token);
             getMe(callback);
         } else {
             callback(false, data);
@@ -222,16 +228,16 @@ export var login = (loginInfo, callback, byMail = false, param="login") => {
 }
 
 export var checkEmail = (email, callback) => {
-    HttpPost("/user/check", {
+    HttpPost("/auth/check", {
         email: email,
     }, (state, data) => {
         callback(state, data);
     });
 }
 
-export var setMeInfoToStorage = (uid, token) => {
+export var setMeInfoToStorage = (userid, token) => {
     AsyncStorage.setItem("me", JSON.stringify({
-        uid: uid,
+        userid: userid,
         token: token,
     }), (error) => {
         // Nothing
@@ -242,9 +248,9 @@ export async function getMeInfoFromStorage (callback) {
     try {
         let myInfo = await AsyncStorage.getItem("me");
         let myInfoJson = JSON.parse(myInfo);
-        Me.uid = myInfoJson.uid;
+        Me.userid = myInfoJson.userid;
         Me.token = myInfoJson.token;
-        if (Me.uid != "" && Me.token != "") {
+        if (Me.userid != "" && Me.token != "") {
             CurrentState = -1;
             console.log("Load User From Storage.");
             console.log(Me);
