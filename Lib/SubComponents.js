@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     ExHint: {
-        height: 40,
+        height: 50,
         fontFamily: GlobalFont,
         color: GlobalColor.yellow_dark,
         marginHorizontal: 30,
