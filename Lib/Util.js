@@ -1,7 +1,7 @@
 import { AsyncStorage, Alert } from 'react-native';
 import Forge from 'node-forge';
 
-export const BASEURL = "http://nyusher.nya.vc:8080/";
+export const BASEURL = "http://nyusher.nya.vc:8080";
 export var Me = null;
 
 /*
@@ -15,9 +15,28 @@ export var CurrentState = 0;
  * turn passwd into token
  */
 export var PasswdTokenfy = (passwd) => {
-    var md = forge.md.md5.create();
+    var md = Forge.md.md5.create();
     md.update(passwd);
     return md.digest().toHex();
+}
+
+/*
+ * email check
+ * Return whether the email address is valid
+ */
+export var EmailOfflineValidationCheck = (email) => {
+    var reg = /^\w+([-_.]?\w+)*@\w+([\\.-]?\\w+)*(\.\w{2,6})+$/;
+    return (email.match(reg) != null);
+}
+
+/*
+ * password check
+ * Return whether the password is valid
+ */
+export var PasswdOfflineValidationCheck = (passwd) => {
+    var reg = /^[\w]{6,20}$/;
+    if (passwd.length <= 0) return true;
+    else return (passwd.match(reg) != null);
 }
 
 /*
@@ -175,16 +194,19 @@ export var getMe = (callback) => {
  * 52: invalid email
  * 53: non-nyu email
  */
-export var login = (loginInfo, callback, byMail = false) => {
+export var login = (loginInfo, callback, byMail = false, param="login") => {
     Me.init();
     if (!loginInfo.email) {
         callback(false, {errorCode: 51, errorMsg: "Please input your email."});
         return;
     }
     Me.email = loginInfo.email;
-    Me.passwdtoken = byMail ? "NYUSHer_by_email_login" : PasswdTokenfy(loginInfo.passwdtoken);
+    Me.passwdtoken = byMail ? "NYUSHer_by_email_login" : PasswdTokenfy(loginInfo.passwd);
 
-    HttpPost("/user/login", {
+    // Export Debugging Message
+    console.log("Login with: " + `email=${Me.email}&` + `passwdtoken=${Me.passwdtoken}`);
+
+    HttpPost("/user/" + param, {
         email: Me.email,
         passwdtoken: Me.passwdtoken,
     }, (state, data) => {
@@ -199,6 +221,14 @@ export var login = (loginInfo, callback, byMail = false) => {
     });
 }
 
+export var checkEmail = (email, callback) => {
+    HttpPost("/user/check", {
+        email: email,
+    }, (state, data) => {
+        callback(state, data);
+    });
+}
+
 export var setMeInfoToStorage = (uid, token) => {
     AsyncStorage.setItem("me", JSON.stringify({
         uid: uid,
@@ -208,17 +238,26 @@ export var setMeInfoToStorage = (uid, token) => {
     });
 }
 
-export async function getMeInfoFromStorage (uid, token) {
+export async function getMeInfoFromStorage (callback) {
     try {
         let myInfo = await AsyncStorage.getItem("me");
         let myInfoJson = JSON.parse(myInfo);
         Me.uid = myInfoJson.uid;
         Me.token = myInfoJson.token;
-        CurrentState = -1;
+        if (Me.uid != "" && Me.token != "") {
+            CurrentState = -1;
+            console.log("Load User From Storage.");
+            console.log(Me);
+        } else {
+            console.log("No Local User Found.");
+            Me.init();
+        }
     } catch (error) {
+        // Export Debugging Message
+        console.log("No Local User Found.");
         Me.init();
     }
+    callback();
 }
 
 Me = new User();
-getMeInfoFromStorage();

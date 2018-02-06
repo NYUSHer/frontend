@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { TouchableOpacity, Platform, ScrollView, StatusBar, View, Text, Alert } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Title, SubFrame, ExInput, ExInputText, ExHint, ExButton, Br } from "../SubComponents.js";
-import { Me, CurrentState, getMe, login } from "../Util.js";
+import { Title, SubFrame, ExInput, ExInputText, ExHint, ExButton, Br, GlobalFuncs } from "../SubComponents.js";
+import { Me, CurrentState, getMe, login, checkEmail, EmailOfflineValidationCheck, PasswdOfflineValidationCheck, getMeInfoFromStorage } from "../Util.js";
 
 const EMAIL_LOGIN_HINT = "You Can Leave PassCode Empty to Do an Email Login.";
 const PASS_LOGIN_HINT  = "You Are Now Using PassCode to Login The Service.";
@@ -11,29 +11,45 @@ const PASS_LOGIN_HINT  = "You Are Now Using PassCode to Login The Service.";
 export class Login extends Component {
     _onchange(id, text, e) {
         if (id == "passwd") {
+            this.setState({passwd: text});
             this.setState({
                 hintText: text.length <= 0 ? EMAIL_LOGIN_HINT : PASS_LOGIN_HINT,
                 hintColor: text.length <= 0 ? "" : "#44FF44",
             });
         } else if (id == "email") {
             this.setState({email: text});
-        } else if (id == "passwd") {
-            this.setState({passwd: text});
+            checkEmail(text, (state, data) => {
+                if (state) {
+                    this.setState({btnword: "Login", func: 1});
+                } else {
+                    this.setState({btnword: "Register", func: 2});
+                }
+            });
         }
     }
 
     _onpress(id) {
         if (id == "login") {
+            if (!EmailOfflineValidationCheck(this.state.email)) {
+                GlobalFuncs.globalAlert.navAlert("error", "Error", `Invalid Email! Please Check.`);
+                return;
+            } 
+            if (!PasswdOfflineValidationCheck(this.state.passwd)) {
+                GlobalFuncs.globalAlert.navAlert("error", "Error", `Invalid Password! Please Check.`);
+                return;
+            }
             login({
                 email: this.state.email,
                 passwd: this.state.passwd,
             }, (state, data) => {
-                if (state == true || state == false) {
-                    this.props.navigation.goBack();
+                if (state == true) {
+                    GlobalFuncs.globalAlert.navAlert("success", "Welcome", `Welcome Back! ${Me.name}.`);
+                    setTimeout(() => {this.props.navigation.goBack()}, 500);
                 } else if (data.errorCode == 102) {
+                    GlobalFuncs.globalAlert.navAlert("warn", "Verifying ...", `Please go and check your mailbox.`);
                     this.setState({btn: CurrentState == -1 ? false : true});
                 } else {
-                    Alert.alert("Error", data.errorMsg);
+                    GlobalFuncs.globalAlert.navAlert("error", `Error ${data.errorCode}`, data.errorMsg);
                 }
                 this.setState({btn: CurrentState == -1 ? false : true});
             }, this.state.passwd.length <= 0);
@@ -49,12 +65,23 @@ export class Login extends Component {
             email: "",
             passwd: "",
             btn: CurrentState == -1 ? false : true,
+            btnword: "Login",
+            func: 1,
         }
-        Me.uid=1;
-        Me.token="123123123123";
-        getMe((state, data) => {
-            // Alert.alert("Error", data.errorMsg);
-            this.setState({btn: CurrentState == -1 ? false : true});
+        
+        getMeInfoFromStorage(() => {
+            if (Me.uid != "" && Me.token != "") {
+                console.log("Verify Last Login.");
+                getMe((state, data) => {
+                    this.setState({btn: CurrentState == -1 ? false : true});
+                    if (CurrentState == 1) {
+                        GlobalFuncs.globalAlert.navAlert("success", "Welcome", `Welcome Back! ${Me.name}.`);
+                        setTimeout(() => {this.props.navigation.goBack()}, 500);
+                    } else {
+                        GlobalFuncs.globalAlert.navAlert("warn", "Warning", `Last session ends, please login again.`);
+                    }
+                });
+            }
         });
     }
 
@@ -91,7 +118,7 @@ export class Login extends Component {
                 <ExInput id="passwd" name="Password" type="passwd" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.passwd}/>
                 <ExHint show={this.state.showHint} text={this.state.hintText} color={this.state.hintColor}/>
                 <Br h={50}/>
-                <ExButton id="login" disabled={!this.state.btn} onpress={(id) => {this._onpress(id);}}>{this.state.btn ? "Login" : "Verifying ..."}</ExButton>
+                <ExButton id="login" disabled={!this.state.btn} onpress={(id) => {this._onpress(id);}}>{this.state.btn ? this.state.btnword : "Verifying ..."}</ExButton>
             </SubFrame>
         );
     }

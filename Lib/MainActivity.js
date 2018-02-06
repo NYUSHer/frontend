@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import { Button, Platform, ScrollView, StatusBar, View, Text } from 'react-native';
+import DropdownAlert from 'react-native-dropdownalert';
 import { TabNavigator, StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Dashboard } from "./Dashboard.js";
 import { Moment } from "./Moment.js";
 import { Forum } from "./Forum.js";
-import { globalStyle, GlobalFont } from "./SubComponents.js";
+import { globalStyle, GlobalFont, GlobalColor, GlobalFuncs } from "./SubComponents.js";
 import { Login } from "./InnerPage/Login.js";
 import { Me, CurrentState } from "./Util.js";
+
+var that = null;
 
 export const MainAppEntry = TabNavigator({
     Dashboard: {
@@ -54,7 +57,7 @@ export class MainAppEntryWrapper extends Component {
     }
 }
 
-export const MainApp = StackNavigator(
+export const MainAppWithoutInfo = StackNavigator(
     {
         MainScreen: {
             screen: MainAppEntryWrapper,
@@ -76,3 +79,37 @@ export const MainApp = StackNavigator(
         },
     }
 );
+
+export class MainApp extends Component {
+    navAlert(type, title, text) {
+        if (that) that.dropdown.alertWithType(type, title, text);
+    }
+
+    cancelNavAlert() {
+        if (that) that.dropdown.close();
+    }
+
+    handleClose(data) {
+
+    }
+
+    componentWillMount() {
+        that = this;
+        GlobalFuncs.globalAlert = { navAlert: this.navAlert, cancelNavAlert: this.cancelNavAlert }
+    }
+
+    render() {
+        return (
+        <View style={{flex: 1}}>
+            <MainAppWithoutInfo />
+            <DropdownAlert
+                ref={ref => this.dropdown = ref}
+                containerStyle={{
+                    backgroundColor: GlobalColor.blue,
+                }}
+                showCancel={false}
+                onClose={data => this.handleClose(data)}
+            />
+        </View>);
+    }
+}

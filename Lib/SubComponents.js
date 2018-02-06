@@ -4,6 +4,9 @@ import { Button, StyleSheet, TouchableOpacity, RefreshControl, TouchableHighligh
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SortableListView from 'react-native-sortable-listview'
 
+export const GlobalFuncs = {
+    globalAlert: null
+};
 export const GlobalFont = (Platform.OS === 'ios' ? "QuickSand" : "Quicksand-Bold");
 export const GlobalColor = {
     "blue"  : "#35A7FF",
@@ -68,7 +71,7 @@ export class PostListView extends Component {
         this.state = {
             data: this.props.data,
             refreshing: false,
-            isLoadingTail: false,
+            loadMore: false,
         };
     }
     
@@ -81,17 +84,24 @@ export class PostListView extends Component {
         }
     }
 
-    _endReached = () => {
-        if(this.state.isLoadingTail) {
-          return;
+    _onScroll(event) {
+        if(this.state.loadMore){
+            return;
         }
-        this.setState({isLoadingTail: true});
-        if (this.props.onmore) {
-            this.props.onmore(() => {
-                this.setState({isLoadingTail: false});
-            })
+        let y = event.nativeEvent.contentOffset.y;
+        let height = event.nativeEvent.layoutMeasurement.height;
+        let contentHeight = event.nativeEvent.contentSize.height;
+        if(y+height>=contentHeight-20){
+            this.setState({
+                loadMore: true
+            });
+            if (this.props.onmore) {
+                this.props.onmore(() => {
+                    this.setState({loadMore: false});
+                });
+            }
         }
-      }
+    }
 
     render() {
         let order = Object.keys(this.props.data);
@@ -103,7 +113,8 @@ export class PostListView extends Component {
                 }}
                 data={this.state.data}
                 order={order}
-                onEndReached={() => {this._endReached()}}
+                onScroll={this._onScroll.bind(this)}
+                scrollEventThrottle={50}
                 refreshControl={
                     <RefreshControl
                         refreshing={this.state.refreshing}
@@ -137,6 +148,7 @@ export class ExInput extends Component {
         return (
             <View>
                 <TextInput 
+                    autoCapitalize = {"none"}
                     style={styles.ExInput}
                     placeholder={this.props.name}
                     autoCorrect={false}

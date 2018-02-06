@@ -9,8 +9,8 @@ let forumData = {};
 var forumLen = 0;
 export var ForumNavigator = null;
 
-var forumLayoutUnitTest = () => {
-    for (var i = forumLen; i < forumLen + 3; i++) {
+var forumLayoutUnitTest = (num=3) => {
+    for (var i = forumLen; i < forumLen + num; i++) {
         forumData[i] = {
             title: "This is the title " + (i + 1),
             id: i,
@@ -19,16 +19,16 @@ var forumLayoutUnitTest = () => {
             author: "NHibiki",
         };
     }
-    forumLen += 3;
+    forumLen += num;
 }
-forumLayoutUnitTest();
+forumLayoutUnitTest(12);
 
 var refreshForumList = (callback) => {
     for (var i = 0; i < forumLen; i++) {
         delete forumData[i];
     }
     forumLen  = 0;
-    forumLayoutUnitTest();
+    forumLayoutUnitTest(12);
     callback();
 }
 
