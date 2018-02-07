@@ -4,11 +4,50 @@ import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Title, SubFrame, ExInput, ExInputText, ExHint, ExButton, Br, GlobalFuncs } from "../SubComponents.js";
 import { Me, CurrentState, getMe, login, checkEmail, EmailOfflineValidationCheck, PasswdOfflineValidationCheck, getMeInfoFromStorage } from "../Util.js";
+// import { setInterval } from 'timers';
 
 const EMAIL_LOGIN_HINT = "You Can Leave PassCode Empty to Do an Email Login.";
 const PASS_LOGIN_HINT  = "You Are Now Using PassCode to Login The Service.";
+var checkingThread = null;
 
 export class Login extends Component {
+    _checkStateOfVerify(successCb=()=>{}, failCb=()=>{}) {
+        Me.fetchInfo((state, data) => {
+            if (state) {
+                if (checkingThread != null) {
+                    clearInterval(checkingThread);
+                    checkingThread = null;
+                }
+                successCb(state, data);
+            } else {
+                if (data.errorCode != "102") {
+                    if (checkingThread != null) {
+                        clearInterval(checkingThread);
+                        checkingThread = null;
+                    }
+                    failCb(state, data);
+                }
+            }
+        });
+    }
+
+    _startVerify() {
+        let itvlThis = this;
+        if (checkingThread != null) {
+            clearInterval(checkingThread);
+            checkingThread = null;
+        }
+        checkingThread = setInterval(() => {
+            itvlThis._checkStateOfVerify((state, data) => {
+                GlobalFuncs.globalAlert.navAlert("success", "Welcome", `Welcome Back! ${Me.username}.`);
+                setTimeout(() => {itvlThis.props.navigation.goBack()}, 500);
+            }, (state, data) => {
+                GlobalFuncs.globalAlert.navAlert("error", `Error ${data.errorCode}`, data.errorMsg);
+                itvlThis.setState({btn: CurrentState == -1 ? false : true});
+            });
+        }, 1000);
+    }
+
     _onchange(id, text, e) {
         if (id == "passwd") {
             this.setState({passwd: text});
@@ -38,21 +77,22 @@ export class Login extends Component {
                 GlobalFuncs.globalAlert.navAlert("error", "Error", `Invalid Password! Please Check.`);
                 return;
             }
+            
             login({
                 email: this.state.email,
                 passwd: this.state.passwd,
             }, (state, data) => {
                 if (state == true) {
-                    GlobalFuncs.globalAlert.navAlert("success", "Welcome", `Welcome Back! ${Me.name}.`);
+                    GlobalFuncs.globalAlert.navAlert("success", "Welcome", `Welcome Back! ${Me.username}.`);
                     setTimeout(() => {this.props.navigation.goBack()}, 500);
                 } else if (data.errorCode == 102) {
                     GlobalFuncs.globalAlert.navAlert("warn", "Verifying ...", `Please go and check your mailbox.`);
-                    this.setState({btn: CurrentState == -1 ? false : true});
+                    this._startVerify();
                 } else {
                     GlobalFuncs.globalAlert.navAlert("error", `Error ${data.errorCode}`, data.errorMsg);
                 }
                 this.setState({btn: CurrentState == -1 ? false : true});
-            }, this.state.passwd.length <= 0);
+            }, this.state.passwd.length <= 0, this.state.func == 1 ? "login" : "register");
         }
     }
 
@@ -75,7 +115,7 @@ export class Login extends Component {
                 getMe((state, data) => {
                     this.setState({btn: CurrentState == -1 ? false : true});
                     if (CurrentState == 1) {
-                        GlobalFuncs.globalAlert.navAlert("success", "Welcome", `Welcome Back! ${Me.name}.`);
+                        GlobalFuncs.globalAlert.navAlert("success", "Welcome", `Welcome Back! ${Me.username}.`);
                         setTimeout(() => {this.props.navigation.goBack()}, 500);
                     } else {
                         GlobalFuncs.globalAlert.navAlert("warn", "Warning", `Last session ends, please login again.`);

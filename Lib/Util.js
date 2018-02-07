@@ -206,7 +206,7 @@ export var login = (loginInfo, callback, byMail = false, param="login") => {
         return;
     }
     Me.email = loginInfo.email;
-    Me.passwdtoken = byMail ? "NYUSHer_by_email_login" : PasswdTokenfy(loginInfo.passwd);
+    Me.passwdtoken = byMail ? "byMailLogin" : PasswdTokenfy(loginInfo.passwd);
 
     // Export Debugging Message
     //console.log("Login with: " + `email=${Me.email}&` + `passwdtoken=${Me.passwdtoken}`);
