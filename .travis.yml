@@ -5,27 +5,8 @@ before_install:
  - nvm install 6
  - node --version
 
-addons:
-  apt:
-    sources:
-      - sourceline: 'deb https://dl.yarnpkg.com/debian/ stable main'
-        key_url: 'https://dl.yarnpkg.com/debian/pubkey.gpg'
-    packages:
-      - yarn
-
-install:
- - yarn install
-
 notifications:
   email: true
 
 script:
  - npm test
-
-deploy:
-  provider: releases
-  skip_cleanup: true
-  file: $TRAVIS_BUILD_DIR/iOS/app/build/ipa/app-release.ipa
-  on:
-    repo: NYUSHer/frontend
-    tags: true
