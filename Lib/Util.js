@@ -1,4 +1,5 @@
 import { AsyncStorage, Alert } from 'react-native';
+import { GlobalFuncs } from './SubComponents.js';
 import Forge from 'node-forge';
 
 export const BASEURL = "http://nyusher.nya.vc:8080";
@@ -181,6 +182,9 @@ export var getMe = (callback) => {
     Me.fetchInfo((state, data) => {
         if (state) {
             CurrentState = 1;
+            if (GlobalFuncs.globalDashboardUF != null) {
+                GlobalFuncs.globalDashboardUF();
+            }
             callback(true, data);
         } else {
             CurrentState = -1;

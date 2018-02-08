@@ -5,7 +5,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import SortableListView from 'react-native-sortable-listview'
 
 export const GlobalFuncs = {
-    globalAlert: null
+    globalAlert: null,
+    globalDashboardUF: null,
 };
 export const GlobalFont = (Platform.OS === 'ios' ? "QuickSand" : "Quicksand-Bold");
 export const GlobalColor = {

@@ -72,7 +72,7 @@ export const MainAppWithoutInfo = StackNavigator(
         headerMode: 'none',
         mode: 'modal',
         navigationOptions: {
-            // gesturesEnabled: false,
+            gesturesEnabled: false,
         },
         cardStyle: {
             backgroundColor: "#FFF",
