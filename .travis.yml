@@ -14,7 +14,6 @@ addons:
       - yarn
 
 install:
- - npm install
  - yarn install
 
 notifications:
@@ -22,3 +21,11 @@ notifications:
 
 script:
  - npm test
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  file: $TRAVIS_BUILD_DIR/iOS/app/build/ipa/app-release.ipa
+  on:
+    repo: NYUSHer/frontend
+    tags: true
