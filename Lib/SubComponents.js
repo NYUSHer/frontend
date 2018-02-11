@@ -15,6 +15,22 @@ export const GlobalColor = {
     "red"   : "#FF5964",
     "yellow": "#FFE74C",
     "yellow_dark": "#FFA72C",
+    "orange": "rgb(255, 100, 0)",
+}
+
+export const randomColor = function() {
+    return `rgb(${parseInt(Math.random() * 255)}, ${parseInt(Math.random() * 255)}, ${parseInt(Math.random() * 255)})`;
+}
+
+export const whiteRate = function(c) {
+    let begin = c.search(/\(/);
+    let end = c.search(/\)/);
+    let colors = c.substring(begin + 1, end).split(",");
+    let v = 0;
+    for (var i = 0; i < colors.length; i++) {
+        v += parseInt(colors[i]) / 255 / colors.length;
+    }
+    return v;
 }
 
 export class SubFrame extends Component {
@@ -30,10 +46,82 @@ export class SubFrame extends Component {
 }
 
 export class Title extends Component {
+    _renderBtn() {
+        if (this.props.btn) {
+            return (
+                <TouchableHighlight
+                    underlayColor="#FFF"
+                    style={{
+                        
+                    }}
+                    onPress={() => {if(this.props.onpress){this.props.onpress();}}}>
+                    <Text style={[styles.Title, {
+                        color: GlobalColor.orange,
+                    }]}>{this.props.btn}</Text>
+                </TouchableHighlight>
+            )
+        }
+    }
     render() {
-        return ( 
-            <Text style={styles.Title}>{this.props.value}</Text>
+        return (
+            <View style={{
+                alignSelf: 'stretch',
+                justifyContent: 'flex-start',
+                flexDirection: 'row',
+            }}>
+                <Text style={styles.Title}>{this.props.value}</Text>
+                {this._renderBtn()}
+            </View>
         );
+    }
+}
+
+export class UserAvatar extends Component {
+    _onpress() {
+        if (this.props.onpress) {
+            this.props.onpress();
+        }
+        console.log("Avatar on Press.");
+    }
+
+    render() {
+        if (this.props.uri.indexOf("://") >= 0) {
+            return (
+                <TouchableHighlight
+                    underlayColor="rgba(255, 255, 255, 0.1)"
+                    onPress={() => {this._onpress();}}>
+                    <Image
+                        style={{
+                            width: this.props.size || 40,
+                            height: this.props.size || 40,
+                            borderRadius: 20}}
+                        source={{uri: this.props.uri}}
+                    />
+                </TouchableHighlight>
+            );
+        } else {
+            let word = this.props.uri ? this.props.uri[0].toLocaleUpperCase() : "";
+            let rndColor = randomColor();
+            let wtRate = whiteRate(rndColor);
+            return (
+                <TouchableHighlight
+                    underlayColor={rndColor}
+                    style={{
+                        width: this.props.size || 40,
+                        height: this.props.size || 40,
+                        borderRadius: 20,
+                        justifyContent: "center",
+                        backgroundColor: rndColor,
+                    }}
+                    onPress={() => {this._onpress();}}>
+                    <Text style={{
+                        fontSize: 20,
+                        paddingHorizontal: 13,
+                        color: wtRate > 0.5 ? "#000" : "#FFF",
+                    }}>{word}</Text>
+                </TouchableHighlight>
+            )
+        }
     }
 }
 
@@ -146,16 +234,8 @@ export class ExInput extends Component {
         }
     }
 
-    componentWillMount() {
-        this.interval = null;
-        if (this.props.check)
-            this.interval = setInterval(() => {
-                this.setState({text: this.props.value});
-            }, 500);
-    }
-
-    componentWillUnmount() {
-        if (this.interval != null) clearInterval(this.interval);
+    _changeValue(v) {
+        this.setState({text: v});
     }
 
     render() {
@@ -251,6 +331,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 32,
         color: "#35A7FF",
+        flex: 1,
         // fontFamily: GlobalFont
     },
     ExInput: {

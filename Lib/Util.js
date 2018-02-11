@@ -147,10 +147,11 @@ export class User {
         HttpPost("/auth/info", {
             userid: this.userid,
         }, (state, data) => {
+            // console.log(data);
             if (state) {
                 this.username = data.username;
                 this.email = data.email;
-                this.avatar = data.avatar;
+                this.avatar = data.imageuri;
                 this.motto = data.motto;
                 callback(true, this);
             } else {

@@ -118,8 +118,7 @@ export class Login extends Component {
                     func: 1,
                     btnword: "Login",
                 });
-                console.log(this.forceUpdate());
-                console.log(this.state.email);
+                console.log(this._email._changeValue(Me.email));
             }
             if (Me.userid != "" && Me.token != "") {
                 console.log("Verify Last Login.");
@@ -166,10 +165,10 @@ export class Login extends Component {
                 <Title value="Login" style={{textAlign: "center"}}></Title>
                 <Br h={50}/>
                 <ExInputText>Your E-mail:</ExInputText>
-                <ExInput check={true} id="email" name="Email Address" type="email-address" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.email}/>
+                <ExInput ref={(c) => this._email = c} id="email" name="Email Address" type="email-address" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.email}/>
                 <Br h={30}/>
                 <ExInputText style={{marginTop: 20}}>Your PassCode:</ExInputText>
-                <ExInput check={false} id="passwd" name="Password" type="passwd" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.passwd}/>
+                <ExInput id="passwd" name="Password" type="passwd" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.passwd}/>
                 <ExHint show={this.state.showHint} text={this.state.hintText} color={this.state.hintColor}/>
                 <Br h={50}/>
                 <ExButton id="login" color={this.state.func == 1 ? "#8F8" : "#FC4"} disabled={!this.state.btn} onpress={(id) => {this._onpress(id);}}>{this.state.btn ? this.state.btnword : "Verifying ..."}</ExButton>

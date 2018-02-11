@@ -73,7 +73,7 @@ export class ForumList extends Component {
         ForumNavigator = this.props.navigation;
         return (
             <SubFrame>
-                <Title value="Forum"></Title>
+                <Title value="Forum" btn="+"/>
                 <PostListView onmore={(cb) => {moreForumList(cb);}} onrefresh={(cb) => {refreshForumList(cb);}} data={this.state.data} func={(e) => this._onSelect(e)}/>
             </SubFrame>
         );

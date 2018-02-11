@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Platform, ScrollView, StatusBar, View, Text, Image, TouchableHighlight } from 'react-native';
+import { Button, Platform, ScrollView, StatusBar, View, Text, TextInput, Image, TouchableHighlight } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Title, SubFrame, GlobalFont, GlobalFuncs, globalStyle } from "./SubComponents.js";
+import { Title, SubFrame, UserAvatar, GlobalFont, GlobalFuncs, globalStyle } from "./SubComponents.js";
 import { Me } from "./Util.js";
 
 var dthat = null;
@@ -13,6 +13,7 @@ export class UserFrame extends Component {
         this.state = {
             avatar: Me.avatar,
             username: Me.username,
+            text: Me.username,
         };
     }
 
@@ -20,6 +21,7 @@ export class UserFrame extends Component {
         dthat.setState({
             avatar: Me.avatar,
             username: Me.username,
+            text: Me.username || "Anonymous"
         });
     }
 
@@ -28,6 +30,16 @@ export class UserFrame extends Component {
         if (GlobalFuncs.globalPopups) {
             GlobalFuncs.globalPopups("Login");
         }
+    }
+
+    _onchange(text) {
+        this.setState({text: text});
+    }
+
+    _oninputend() {
+        console.log(this.state.text);
+        if (this._input)
+            this._input.focus();
     }
 
     componentWillMount() {
@@ -45,9 +57,21 @@ export class UserFrame extends Component {
                 marginHorizontal: 15,
                 marginRight: 30
             }}>
-                <Image style={{width: 40, height: 40, borderRadius: 20}} source={{uri: this.state.avatar || "https://storage-1.nya.vc/3n6EvDoG"}}/>
+                <UserAvatar uri={Me.avatar || Me.username}/>
                 <View style={{marginLeft: 15, flex: 1}}>
-                    <Text style={{marginTop: 8, fontSize: 18, fontFamily: GlobalFont}} numberOfLines={1}>{this.state.username || "Anonymous"}</Text>
+                    <TextInput 
+                        ref={(c) => this._input = c}
+                        autoCapitalize = {"none"}
+                        style={{marginTop: 8, fontSize: 18, fontFamily: GlobalFont}}
+                        numberOfLines={1}
+                        placeholder={"Your Name"}
+                        autoCorrect={false}
+                        keyboardType={"email-address"}
+                        multiline={false}
+                        onChangeText={(e) => {this._onchange(e)}}
+                        onEndEditing={() => {this._oninputend()}}
+                        value={this.state.text}
+                    />
                 </View>
                 <TouchableHighlight underlayColor="rgba(255, 100, 0, 0.7)" style={globalStyle.pill} onPress={() => {this._logout();}}><Text style={{color: "#FFFFFF"}}>LogOut</Text></TouchableHighlight>
             </View>
