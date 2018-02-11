@@ -120,6 +120,23 @@ export class User {
     }
 
     /*
+     * clear detailed info of current class.
+     * Email is kept
+     */
+    clear() {
+        var isMe = this.userid == Me.userid;
+        this.userid = "";
+        this.username = "";
+        this.avatar = "";
+        this.motto = "";
+        this.passwdtoken = "";
+        this.token = "";
+        if (isMe) {
+            setMeInfoToStorage("", "", this.email);
+        }
+    }
+
+    /*
      * fetch the userinfo from server.
      */
     fetchInfo(callback) {
@@ -189,8 +206,8 @@ export var getMe = (callback) => {
         } else {
             CurrentState = -1;
             if (data.errorCode != 102) {
-                setMeInfoToStorage("", "");
-                Me.init();
+                setMeInfoToStorage("", "", Me.email);
+                Me.clear();
                 CurrentState = 0;
             }
             callback(false, data);
@@ -204,13 +221,13 @@ export var getMe = (callback) => {
  * 53: non-nyu email
  */
 export var login = (loginInfo, callback, byMail = false, param="login") => {
-    Me.init();
+    Me.clear();
     if (!loginInfo.email) {
         callback(false, {errorCode: 51, errorMsg: "Please input your email."});
         return;
     }
     Me.email = loginInfo.email;
-    Me.passwdtoken = byMail ? "byMailLogin" : PasswdTokenfy(loginInfo.passwd);
+    Me.passwdtoken = byMail ? "NYUSHer_by_email_login" : PasswdTokenfy(loginInfo.passwd);
 
     // Export Debugging Message
     //console.log("Login with: " + `email=${Me.email}&` + `passwdtoken=${Me.passwdtoken}`);
@@ -223,7 +240,7 @@ export var login = (loginInfo, callback, byMail = false, param="login") => {
             console.log(data);
             Me.userid = data.userid;
             Me.token = data.token;
-            setMeInfoToStorage(Me.userid, Me.token);
+            setMeInfoToStorage(Me.userid, Me.token, Me.email);
             getMe(callback);
         } else {
             callback(false, data);
@@ -239,10 +256,11 @@ export var checkEmail = (email, callback) => {
     });
 }
 
-export var setMeInfoToStorage = (userid, token) => {
+export var setMeInfoToStorage = (userid, token, email) => {
     AsyncStorage.setItem("me", JSON.stringify({
         userid: userid,
         token: token,
+        email: email
     }), (error) => {
         // Nothing
     });
@@ -254,7 +272,8 @@ export async function getMeInfoFromStorage (callback) {
         let myInfoJson = JSON.parse(myInfo);
         Me.userid = myInfoJson.userid;
         Me.token = myInfoJson.token;
-        if (Me.userid != "" && Me.token != "") {
+        Me.email = myInfoJson.email;
+        if (Me.email != "") {
             CurrentState = -1;
             console.log("Load User From Storage.");
             console.log(Me);

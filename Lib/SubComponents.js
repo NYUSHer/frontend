@@ -7,6 +7,7 @@ import SortableListView from 'react-native-sortable-listview'
 export const GlobalFuncs = {
     globalAlert: null,
     globalDashboardUF: null,
+    globalPopups: null,
 };
 export const GlobalFont = (Platform.OS === 'ios' ? "QuickSand" : "Quicksand-Bold");
 export const GlobalColor = {
@@ -135,7 +136,7 @@ export class PostListView extends Component {
 export class ExInput extends Component {
     constructor(props) {
         super(props);
-        this.state = { text: '' };
+        this.state = { text: this.props.value };
     }
 
     _onchange(text) {
@@ -143,6 +144,18 @@ export class ExInput extends Component {
         if (this.props.onchange) {
             this.props.onchange(this.props.id, text, this);
         }
+    }
+
+    componentWillMount() {
+        this.interval = null;
+        if (this.props.check)
+            this.interval = setInterval(() => {
+                this.setState({text: this.props.value});
+            }, 500);
+    }
+
+    componentWillUnmount() {
+        if (this.interval != null) clearInterval(this.interval);
     }
 
     render() {
@@ -221,6 +234,14 @@ export const globalStyle = StyleSheet.create({
         marginHorizontal: 30,
         marginRight: 70,
     },
+    pill: {
+        backgroundColor: "rgba(255, 100, 0, 1)",
+        borderRadius: 15,
+        height: 30,
+        justifyContent: "center",
+        paddingHorizontal: 15,
+        marginTop: 5,
+    }
 });
 
 const styles = StyleSheet.create({

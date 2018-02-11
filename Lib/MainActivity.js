@@ -47,6 +47,7 @@ export const MainAppEntry = TabNavigator({
 export class MainAppEntryWrapper extends Component {
     componentWillMount() {
         let { navigate } = this.props.navigation;
+        GlobalFuncs.globalPopups = navigate;
         if ( CurrentState != 1) {
             navigate("Login");
         }

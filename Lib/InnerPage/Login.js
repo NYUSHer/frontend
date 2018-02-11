@@ -20,12 +20,14 @@ export class Login extends Component {
                 }
                 successCb(state, data);
             } else {
+                console.log(data);
                 if (data.errorCode != "102") {
                     if (checkingThread != null) {
                         clearInterval(checkingThread);
                         checkingThread = null;
                     }
-                    failCb(state, data);
+                    if (data.errorCode != null)
+                        failCb(state, data);
                 }
             }
         });
@@ -110,6 +112,15 @@ export class Login extends Component {
         }
         
         getMeInfoFromStorage(() => {
+            if (Me.email != "") {
+                this.setState({
+                    email: Me.email,
+                    func: 1,
+                    btnword: "Login",
+                });
+                console.log(this.forceUpdate());
+                console.log(this.state.email);
+            }
             if (Me.userid != "" && Me.token != "") {
                 console.log("Verify Last Login.");
                 getMe((state, data) => {
@@ -117,8 +128,11 @@ export class Login extends Component {
                     if (CurrentState == 1) {
                         GlobalFuncs.globalAlert.navAlert("success", "Welcome", `Welcome Back! ${Me.username}.`);
                         setTimeout(() => {this.props.navigation.goBack()}, 500);
+                    } else if(CurrentState == -1) {
+                        GlobalFuncs.globalAlert.navAlert("warn", "Verifying ...", `Please go and check your mailbox.`);
+                        this._startVerify();
                     } else {
-                        GlobalFuncs.globalAlert.navAlert("warn", "Warning", `Last session ends, please login again.`);
+                        GlobalFuncs.globalAlert.navAlert("error", "Warning", `Last session ends, please login again.`);
                     }
                 });
             }
@@ -152,13 +166,13 @@ export class Login extends Component {
                 <Title value="Login" style={{textAlign: "center"}}></Title>
                 <Br h={50}/>
                 <ExInputText>Your E-mail:</ExInputText>
-                <ExInput id="email" name="Email Address" type="email-address" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.email}/>
+                <ExInput check={true} id="email" name="Email Address" type="email-address" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.email}/>
                 <Br h={30}/>
                 <ExInputText style={{marginTop: 20}}>Your PassCode:</ExInputText>
-                <ExInput id="passwd" name="Password" type="passwd" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.passwd}/>
+                <ExInput check={false} id="passwd" name="Password" type="passwd" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.passwd}/>
                 <ExHint show={this.state.showHint} text={this.state.hintText} color={this.state.hintColor}/>
                 <Br h={50}/>
-                <ExButton id="login" color={this.state.func == 1 ? "#8F8" : "#DDD"} disabled={!this.state.btn} onpress={(id) => {this._onpress(id);}}>{this.state.btn ? this.state.btnword : "Verifying ..."}</ExButton>
+                <ExButton id="login" color={this.state.func == 1 ? "#8F8" : "#FC4"} disabled={!this.state.btn} onpress={(id) => {this._onpress(id);}}>{this.state.btn ? this.state.btnword : "Verifying ..."}</ExButton>
             </SubFrame>
         );
     }

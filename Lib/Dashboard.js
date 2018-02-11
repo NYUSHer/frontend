@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Platform, ScrollView, StatusBar, View, Text, Image } from 'react-native';
+import { Button, Platform, ScrollView, StatusBar, View, Text, Image, TouchableHighlight } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Title, SubFrame, GlobalFont, GlobalFuncs } from "./SubComponents.js";
+import { Title, SubFrame, GlobalFont, GlobalFuncs, globalStyle } from "./SubComponents.js";
 import { Me } from "./Util.js";
 
 var dthat = null;
@@ -23,6 +23,13 @@ export class UserFrame extends Component {
         });
     }
 
+    _logout() {
+        Me.clear();
+        if (GlobalFuncs.globalPopups) {
+            GlobalFuncs.globalPopups("Login");
+        }
+    }
+
     componentWillMount() {
         dthat = this;
         GlobalFuncs.globalDashboardUF = this._changeInfo;
@@ -39,9 +46,10 @@ export class UserFrame extends Component {
                 marginRight: 30
             }}>
                 <Image style={{width: 40, height: 40, borderRadius: 20}} source={{uri: this.state.avatar || "https://storage-1.nya.vc/3n6EvDoG"}}/>
-                <View style={{marginLeft: 15}}>
+                <View style={{marginLeft: 15, flex: 1}}>
                     <Text style={{marginTop: 8, fontSize: 18, fontFamily: GlobalFont}} numberOfLines={1}>{this.state.username || "Anonymous"}</Text>
                 </View>
+                <TouchableHighlight underlayColor="rgba(255, 100, 0, 0.7)" style={globalStyle.pill} onPress={() => {this._logout();}}><Text style={{color: "#FFFFFF"}}>LogOut</Text></TouchableHighlight>
             </View>
         )
     }
