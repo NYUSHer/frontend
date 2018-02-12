@@ -299,7 +299,7 @@ export class ExInput extends Component {
 
     render() {
         return (
-            <View>
+            <View style={this.props.style}>
                 <TextInput 
                     allowFontScaling={false}
                     autoCapitalize = {"none"}
@@ -334,17 +334,25 @@ export class ExInputMulti extends Component {
         this.setState({text: v});
     }
 
+    // _onContentSizeChange(event) {
+    //     this.setState({height: event.nativeEvent.contentSize.height});
+    //     if (this.props.onchangeheight) this.props.onchangeheight();
+    // }
+
     render() {
         return (
-            <View>
+            <View style={this.props.style}>
                 <TextInput 
                     allowFontScaling={false}
-                    // autoCapitalize = {"none"}
-                    style={[styles.ExInput, {fontWeight: "normal", height: this.props.height || 100,}]}
+                    style={[styles.ExInput, {
+                        fontWeight: "100",
+                        flex: 1,
+                    }]}
                     placeholder={this.props.name}
                     autoCorrect={true}
                     keyboardType={"default"}
                     multiline={true}
+                    // onContentSizeChange={this._onContentSizeChange.bind(this)}
                     onChangeText={(e) => {this._onchange(e)}}
                     value={this.state.text}
                 />

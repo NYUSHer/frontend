@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, Button, Platform, ScrollView, StatusBar, View, Text, Image} from 'react-native';
+import { TouchableOpacity, Button, Platform, ScrollView, StatusBar, View, Text, Image, KeyboardAvoidingView} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Title, SubFrame, GlobalFont, globalStyle, UserShownRow } from "../SubComponents.js";
+import { Title, SubFrame, GlobalFont, globalStyle, UserShownRow, ExInput } from "../SubComponents.js";
 
 var goBackToList = null;
 export class Post extends Component {
@@ -57,6 +57,14 @@ export class Post extends Component {
                 </View>
                 {/* <Text style={[{fontSize: 12, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]} numberOfLines={1}>{state.params.raw.content}</Text> */}
                 <UserShownRow style={{marginHorizontal: 30, marginTop: -10}} userid={state.params.raw.author} />
+
+                <Text style={[{flex: 1, fontSize: 18, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]}>{state.params.raw.content}</Text>
+
+                <KeyboardAvoidingView behavior='position'>
+                    <ExInput style={{
+                        paddingBottom: 20
+                    }} ref={(c) => this._comment = c} id="comment" name="Write a comment." type="email-address" />
+                </KeyboardAvoidingView>
             </SubFrame>
         );
     }
