@@ -20,8 +20,11 @@ export const GlobalColor = {
 }
 export const fontSizeScaler = Platform.OS === 'ios' ? 1 : (PixelRatio.getFontScale() / PixelRatio.get());
 
-export const randomColor = function() {
-    return `rgb(${parseInt(Math.random() * 255)}, ${parseInt(Math.random() * 255)}, ${parseInt(Math.random() * 255)})`;
+export var storagedColor = {};
+export const randomColor = function(key) {
+    if (key in storagedColor) return storagedColor[key];
+    storagedColor[key] = `rgb(${parseInt(Math.random() * 255)}, ${parseInt(Math.random() * 255)}, ${parseInt(Math.random() * 255)})`;
+    return storagedColor[key];
 }
 
 export const whiteRate = function(c) {
@@ -105,7 +108,7 @@ export class UserAvatar extends Component {
             );
         } else {
             let word = this.props.uri ? this.props.uri[0].toLocaleUpperCase() : "";
-            let rndColor = randomColor();
+            let rndColor = randomColor(this.props.uri);
             let wtRate = whiteRate(rndColor);
             return (
                 <TouchableHighlight
