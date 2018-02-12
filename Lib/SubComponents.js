@@ -18,7 +18,7 @@ export const GlobalColor = {
     "yellow_dark": "#FFA72C",
     "orange": "rgb(255, 100, 0)",
 }
-export const fontSizeScaler = Platform.OS === 'ios' ? 1 : (PixelRatio.get() / PixelRatio.getFontScale());
+export const fontSizeScaler = Platform.OS === 'ios' ? 1 : (PixelRatio.getFontScale() / PixelRatio.get());
 
 export const randomColor = function() {
     return `rgb(${parseInt(Math.random() * 255)}, ${parseInt(Math.random() * 255)}, ${parseInt(Math.random() * 255)})`;
@@ -297,6 +297,12 @@ export class ExInput extends Component {
         this.setState({text: v});
     }
 
+    _oninputend() {
+        if (this.props.oninputend) {
+            this.props.oninputend(this.props.id, this.state.text, this);
+        }
+    }
+
     render() {
         return (
             <View style={this.props.style}>
@@ -309,6 +315,7 @@ export class ExInput extends Component {
                     keyboardType={this.props.type == "passwd" ? "default" : this.props.type}
                     secureTextEntry={this.props.type == "passwd" ? true : false}
                     multiline={false}
+                    onEndEditing={() => {this._oninputend()}}
                     onChangeText={(e) => {this._onchange(e)}}
                     value={this.state.text}
                 />

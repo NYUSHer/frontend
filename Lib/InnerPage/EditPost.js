@@ -85,7 +85,7 @@ export class EditPost extends Component {
                 </View>
                 <UserShownRow style={{marginHorizontal: 30, marginTop: -10, backgroundColor: "#FFF"}} userid={Me.userid} />
                 <KeyboardAvoidingView behavior='height' style={{flex: 1}}>
-                    <ExInputMulti style={{flex: 1}}ref={(c) => this._title = c} id="content" name="Post Content" type="email-address" />
+                    <ExInputMulti style={{flex: 1}}ref={(c) => this._title = c} id="content" name={"Post Content Here..." + String.fromCharCode(10) + String.fromCharCode(10) + "Press 'x' to cancel," + String.fromCharCode(10) + "Press '√' to submit."} type="email-address" />
                     <Text style={[{fontSize: 12, fontFamily: GlobalFont, marginBottom: 20, paddingBottom: 10,}, globalStyle.center]} numberOfLines={1}>At {new Date().toTimeString()}</Text>
                 </KeyboardAvoidingView>
             </SubFrame>

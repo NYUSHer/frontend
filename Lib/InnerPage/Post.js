@@ -24,6 +24,22 @@ export class Post extends Component {
         }
     };
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            commentText: "Write a comment.",
+        }
+    } 
+
+    _oninputend(id, text, that) {
+        if (!this._comment) return;
+        
+        this.setState({
+            commentText: text,
+        });
+        this._comment.setState({text: ""});
+    }
+
     render() {
         const {
             goBack, state
@@ -74,12 +90,12 @@ export class Post extends Component {
                                 style={{ color: GlobalColor.blue, paddingTop: 5, marginRight: -15, marginLeft: 15 }}
                             />
                         </TouchableOpacity>
-                        <ExInput innerstyle={{fontWeight: "100"}} style={{flex: 1}} ref={(c) => this._comment = c} id="comment" name="Write a comment." type="email-address" />
+                        <ExInput oninputend={(a,b,c) => {this._oninputend(a,b,c);}} innerstyle={{fontWeight: "100", fontSize: 18}} style={{flex: 1}} ref={(c) => this._comment = c} id="comment" name={this.state.commentText} type="email-address" />
                         <TouchableOpacity
                         onPress={() => {}}
                         >
                         <Ionicons
-                                name='ios-redo'
+                                name='ios-redo-outline'
                                 size={30}
                                 style={{ color: "#0E0", paddingTop: 5, marginLeft: -15, marginRight: 15 }}
                             />
