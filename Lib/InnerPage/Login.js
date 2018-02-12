@@ -88,7 +88,12 @@ export class Login extends Component {
             }, (state, data) => {
                 if (state == true) {
                     GlobalFuncs.globalAlert.navAlert("success", "Welcome", `Welcome Back! ${Me.username}.`);
-                    setTimeout(() => {this.props.navigation.goBack()}, 500);
+                    setTimeout(() => {
+                        if (GlobalFuncs.globalDashboardUF != null) {
+                            GlobalFuncs.globalDashboardUF();
+                        }
+                        this.props.navigation.goBack()
+                    }, 500);
                 } else if (data.errorCode == 102) {
                     GlobalFuncs.globalAlert.navAlert("warn", "Verifying ...", `Please go and check your mailbox.`);
                     this._startVerify();

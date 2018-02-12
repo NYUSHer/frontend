@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { TouchableOpacity, Button, Platform, ScrollView, StatusBar, View, Text, Image} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Title, SubFrame, GlobalFont, globalStyle, UserShownRow } from "../SubComponents.js";
+import { Title, SubFrame, GlobalFont, globalStyle, UserShownRow, ExInput } from "../SubComponents.js";
 import { Me } from "../Util.js";
 
 var goBackToList = null;
@@ -52,12 +52,13 @@ export class EditPost extends Component {
                     {/* <Text style={{fontSize: 30, fontFamily: GlobalFont, width: 20}}>{this.props.data.id}</Text> */}
                     {/* <Image style={{width: 40, height: 40, borderRadius: 20}} source={{uri: state.params.raw.img}}/> */}
                         <View style={{marginLeft: 15}}>
-                            <ExInput ref={(c) => this._title = c} id="title" name="Post Title" type="email-address" />
-                            <Text style={{fontSize: 18, fontFamily: GlobalFont, fontWeight: "bold", fontSize: 32,}} numberOfLines={1}>New Post</Text>
+                            <ExInput ref={(c) => this._title = c} id="title" name="Post Title Here     " type="email-address" />
+                            {/* <Text style={{fontSize: 18, fontFamily: GlobalFont, fontWeight: "bold", fontSize: 32,}} numberOfLines={1}>New Post</Text> */}
                         </View>
                     </View>
                 </View>
                 <UserShownRow style={{marginHorizontal: 30, marginTop: -10}} userid={Me.userid} />
+                <ExInput ref={(c) => this._title = c} id="content" name="Post Content" type="email-address" />
             </SubFrame>
         );
     }
