@@ -317,6 +317,42 @@ export class ExInput extends Component {
     }
 }
 
+export class ExInputMulti extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { text: this.props.value };
+    }
+
+    _onchange(text) {
+        this.setState({text: text});
+        if (this.props.onchange) {
+            this.props.onchange(this.props.id, text, this);
+        }
+    }
+
+    _changeValue(v) {
+        this.setState({text: v});
+    }
+
+    render() {
+        return (
+            <View>
+                <TextInput 
+                    allowFontScaling={false}
+                    // autoCapitalize = {"none"}
+                    style={[styles.ExInput, {fontWeight: "normal", height: this.props.height || 100,}]}
+                    placeholder={this.props.name}
+                    autoCorrect={true}
+                    keyboardType={"default"}
+                    multiline={true}
+                    onChangeText={(e) => {this._onchange(e)}}
+                    value={this.state.text}
+                />
+            </View>
+        )
+    }
+}
+
 export class ExInputText extends Component {
     render() {
         return (
