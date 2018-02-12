@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { TouchableOpacity, Button, Platform, ScrollView, StatusBar, View, Text, Image, KeyboardAvoidingView} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Title, SubFrame, GlobalFont, globalStyle, UserShownRow, ExInput } from "../SubComponents.js";
+import { Title, SubFrame, GlobalFont, globalStyle, UserShownRow, ExInput, GlobalColor } from "../SubComponents.js";
 
 var goBackToList = null;
 export class Post extends Component {
@@ -60,10 +60,31 @@ export class Post extends Component {
 
                 <Text style={[{flex: 1, fontSize: 18, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]}>{state.params.raw.content}</Text>
 
-                <KeyboardAvoidingView behavior='position'>
-                    <ExInput style={{
+                <KeyboardAvoidingView style={{
                         paddingBottom: 20
-                    }} ref={(c) => this._comment = c} id="comment" name="Write a comment." type="email-address" />
+                    }} behavior='position'>
+                    <View style={{flexDirection: "row"}}>
+                        <TouchableOpacity
+                            onPress={() => {}}
+                        >
+                        <Ionicons
+                                // name='ios-redo'
+                                name='ios-log-in'
+                                size={30}
+                                style={{ color: GlobalColor.blue, paddingTop: 5, marginRight: -15, marginLeft: 15 }}
+                            />
+                        </TouchableOpacity>
+                        <ExInput innerstyle={{fontWeight: "100"}} style={{flex: 1}} ref={(c) => this._comment = c} id="comment" name="Write a comment." type="email-address" />
+                        <TouchableOpacity
+                        onPress={() => {}}
+                        >
+                        <Ionicons
+                                name='ios-redo'
+                                size={30}
+                                style={{ color: "#0E0", paddingTop: 5, marginLeft: -15, marginRight: 15 }}
+                            />
+                        </TouchableOpacity>
+                    </View>
                 </KeyboardAvoidingView>
             </SubFrame>
         );

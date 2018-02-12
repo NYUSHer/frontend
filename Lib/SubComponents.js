@@ -303,7 +303,7 @@ export class ExInput extends Component {
                 <TextInput 
                     allowFontScaling={false}
                     autoCapitalize = {"none"}
-                    style={styles.ExInput}
+                    style={[styles.ExInput, this.props.innerstyle]}
                     placeholder={this.props.name}
                     autoCorrect={false}
                     keyboardType={this.props.type == "passwd" ? "default" : this.props.type}
