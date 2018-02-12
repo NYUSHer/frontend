@@ -175,12 +175,17 @@ export class User {
             callback(false, "Illegal Operation.");
             return;
         }
-        HttpPost("/auth/set", {
+        let postData = {
             username: this.username,
-            imageuri: this.avatar,
-            motto: this.motto,
             // passwdtoken: this.passwdtoken,
-        }, (state, data) => {
+        }
+        if (this.avatar) {
+            postData.imageuri = this.avatar;
+        }
+        if (this.motto) {
+            postData.motto = this.motto;
+        }
+        HttpPost("/auth/set", postData, (state, data) => {
             if (state) {
                 console.log("Set User Info:");
                 console.log(data);
