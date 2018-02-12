@@ -59,6 +59,9 @@ export class Login extends Component {
             });
         } else if (id == "email") {
             this.setState({
+                btn: true,
+            });
+            this.setState({
                 email: text,
             });
             checkEmail(text, (state, data) => {
