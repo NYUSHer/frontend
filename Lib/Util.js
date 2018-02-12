@@ -48,6 +48,12 @@ export var HttpPost = (route, data, callback) => {
     for (var k in data) {
         formData.append(k, data[k]);
     }
+    // console.log("------ New Post ------");
+    // console.log({
+    //     'token': Me.token,
+    //     'userid'  : Me.userid,
+    // });
+    // console.log(formData);
     fetch(`${BASEURL}${route}`, {
         method: 'POST',
         headers: {
@@ -172,7 +178,7 @@ export class User {
             username: this.username,
             avatar: this.avatar,
             motto: this.motto,
-            passwdtoken: this.passwdtoken,
+            // passwdtoken: this.passwdtoken,
         }, (state, data) => {
             if (state) {
                 this.username = data.username;

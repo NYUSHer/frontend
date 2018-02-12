@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Platform, ScrollView, StatusBar, View, Text, TextInput, Image, TouchableHighlight } from 'react-native';
+import { Button, Platform, ScrollView, StatusBar, View, Text, TextInput, Image, TouchableHighlight, KeyboardAvoidingView } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Title, SubFrame, UserAvatar, GlobalFont, GlobalFuncs, globalStyle } from "./SubComponents.js";
+import { Title, SubFrame, UserAvatar, GlobalFont, GlobalFuncs, globalStyle, fontSizeScaler } from "./SubComponents.js";
 import { Me } from "./Util.js";
 
 var dthat = null;
@@ -40,6 +40,12 @@ export class UserFrame extends Component {
         console.log(this.state.text);
         if (this._input)
             this._input.focus();
+        if (this.state.text != Me.username) {
+            Me.username = this.state.text;
+            Me.setInfo((state, data) => {
+                this._changeInfo();
+            });
+        }
     }
 
     componentWillMount() {
@@ -49,32 +55,35 @@ export class UserFrame extends Component {
 
     render() {
         return (
-            <View style={{
-                alignSelf: 'stretch',
-                height: 55,
-                justifyContent: 'flex-start',
-                flexDirection: 'row',
-                marginHorizontal: 15,
-                marginRight: 30
-            }}>
-                <UserAvatar uri={Me.avatar || Me.username}/>
-                <View style={{marginLeft: 15, flex: 1}}>
-                    <TextInput 
-                        ref={(c) => this._input = c}
-                        autoCapitalize = {"none"}
-                        style={{marginTop: 8, fontSize: 18, fontFamily: GlobalFont}}
-                        numberOfLines={1}
-                        placeholder={"Your Name"}
-                        autoCorrect={false}
-                        keyboardType={"email-address"}
-                        multiline={false}
-                        onChangeText={(e) => {this._onchange(e)}}
-                        onEndEditing={() => {this._oninputend()}}
-                        value={this.state.text}
-                    />
+            <KeyboardAvoidingView behavior='padding'>
+                <View style={{
+                    alignSelf: 'stretch',
+                    height: 55,
+                    justifyContent: 'flex-start',
+                    flexDirection: 'row',
+                    marginHorizontal: 15,
+                    marginRight: 30
+                }}>
+                    <UserAvatar uri={Me.avatar || Me.username}/>
+                    <View style={{marginLeft: 15, flex: 1}}>
+                        <TextInput 
+                            allowFontScaling={false}
+                            ref={(c) => this._input = c}
+                            autoCapitalize = {"none"}
+                            style={{marginTop: 8, fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont}}
+                            numberOfLines={1}
+                            placeholder={"Your Name"}
+                            autoCorrect={false}
+                            keyboardType={"email-address"}
+                            multiline={false}
+                            onChangeText={(e) => {this._onchange(e)}}
+                            onEndEditing={() => {this._oninputend()}}
+                            value={this.state.text}
+                        />
+                    </View>
+                    <TouchableHighlight underlayColor="rgba(255, 100, 0, 0.7)" style={globalStyle.pill} onPress={() => {this._logout();}}><Text style={{color: "#FFFFFF"}}>LogOut</Text></TouchableHighlight>
                 </View>
-                <TouchableHighlight underlayColor="rgba(255, 100, 0, 0.7)" style={globalStyle.pill} onPress={() => {this._logout();}}><Text style={{color: "#FFFFFF"}}>LogOut</Text></TouchableHighlight>
-            </View>
+            </KeyboardAvoidingView>
         )
     }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, Platform, ScrollView, StatusBar, View, Text, Alert } from 'react-native';
+import { TouchableOpacity, Platform, ScrollView, StatusBar, View, Text, Alert, KeyboardAvoidingView } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Title, SubFrame, ExInput, ExInputText, ExHint, ExButton, Br, GlobalFuncs } from "../SubComponents.js";
@@ -58,7 +58,9 @@ export class Login extends Component {
                 hintColor: text.length <= 0 ? "" : "#44FF44",
             });
         } else if (id == "email") {
-            this.setState({email: text});
+            this.setState({
+                email: text,
+            });
             checkEmail(text, (state, data) => {
                 if (state) {
                     this.setState({btnword: "Login", func: 1});
@@ -84,6 +86,7 @@ export class Login extends Component {
                 email: this.state.email,
                 passwd: this.state.passwd,
             }, (state, data) => {
+                console.log(data);
                 if (state == true) {
                     GlobalFuncs.globalAlert.navAlert("success", "Welcome", `Welcome Back! ${Me.username}.`);
                     setTimeout(() => {this.props.navigation.goBack()}, 500);
@@ -144,34 +147,36 @@ export class Login extends Component {
         } = this.props.navigation;
         return (
             <SubFrame>
-                {/* <View style={{flexDirection: "row"}}>
-                    <TouchableOpacity
-                        onPress={() => { goBack(); }}
-                        style={{
-                            margin: 30,
-                            marginBottom: 20,
-                            marginRight: -20,
-                            paddingHorizontal: 10
-                        }}
-                    >
-                        <Ionicons
-                            name='ios-arrow-back'
-                            size={40}
-                            style={{ color: "#35A7FF" }}
-                        />
-                    </TouchableOpacity>
-                    <Title value="Login"></Title>
-                </View> */}
-                <Title value="Login" style={{textAlign: "center"}}></Title>
-                <Br h={50}/>
-                <ExInputText>Your E-mail:</ExInputText>
-                <ExInput ref={(c) => this._email = c} id="email" name="Email Address" type="email-address" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.email}/>
-                <Br h={30}/>
-                <ExInputText style={{marginTop: 20}}>Your PassCode:</ExInputText>
-                <ExInput id="passwd" name="Password" type="passwd" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.passwd}/>
-                <ExHint show={this.state.showHint} text={this.state.hintText} color={this.state.hintColor}/>
-                <Br h={50}/>
-                <ExButton id="login" color={this.state.func == 1 ? "#8F8" : "#FC4"} disabled={!this.state.btn} onpress={(id) => {this._onpress(id);}}>{this.state.btn ? this.state.btnword : "Verifying ..."}</ExButton>
+                <KeyboardAvoidingView behavior='padding'>
+                    {/* <View style={{flexDirection: "row"}}>
+                        <TouchableOpacity
+                            onPress={() => { goBack(); }}
+                            style={{
+                                margin: 30,
+                                marginBottom: 20,
+                                marginRight: -20,
+                                paddingHorizontal: 10
+                            }}
+                        >
+                            <Ionicons
+                                name='ios-arrow-back'
+                                size={40}
+                                style={{ color: "#35A7FF" }}
+                            />
+                        </TouchableOpacity>
+                        <Title value="Login"></Title>
+                    </View> */}
+                    <Title value="Login" style={{textAlign: "center"}}></Title>
+                    <Br h={50}/>
+                    <ExInputText>Your E-mail:</ExInputText>
+                    <ExInput ref={(c) => this._email = c} id="email" name="Email Address" type="email-address" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.email}/>
+                    <Br h={30}/>
+                    <ExInputText style={{marginTop: 20}}>Your PassCode:</ExInputText>
+                    <ExInput id="passwd" name="Password" type="passwd" onchange={(a,b,c) => {this._onchange(a,b,c);}} value={this.state.passwd}/>
+                    <ExHint show={this.state.showHint} text={this.state.hintText} color={this.state.hintColor}/>
+                    <Br h={50}/>
+                    <ExButton id="login" color={this.state.func == 1 ? "#8F8" : "#FC4"} disabled={!this.state.btn} onpress={(id) => {this._onpress(id);}}>{this.state.btn ? this.state.btnword : "Verifying ..."}</ExButton>
+                </KeyboardAvoidingView>
             </SubFrame>
         );
     }
