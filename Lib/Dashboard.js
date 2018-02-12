@@ -27,6 +27,9 @@ export class UserFrame extends Component {
 
     _logout() {
         Me.clear();
+        if (GlobalFuncs.globalAlert) {
+            GlobalFuncs.globalAlert.navAlert("success", "LogOut", `Logout Complete, Hope to see you again.`);
+        }
         if (GlobalFuncs.globalPopups) {
             GlobalFuncs.globalPopups("Login");
         }

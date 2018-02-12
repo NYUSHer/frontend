@@ -4,6 +4,7 @@ import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Title, PostListView, SubFrame } from "./SubComponents.js";
 import { Post } from "./InnerPage/Post.js";
+import { EditPost } from "./InnerPage/EditPost.js";
 
 let forumData = {};
 var forumLen = 0;
@@ -16,7 +17,7 @@ var forumLayoutUnitTest = (num=3) => {
             id: i,
             content: "this is a bref content. this is a bref content. this is a bref content.",
             img: "https://storage-1.nya.vc/3n6EvDoG",
-            author: "NHibiki",
+            author: i % 4 + 1,
         };
     }
     forumLen += num;
@@ -73,7 +74,7 @@ export class ForumList extends Component {
         ForumNavigator = this.props.navigation;
         return (
             <SubFrame>
-                <Title value="Forum" btn="+"/>
+                <Title value="Forum" btn="+" onpress={() => {this.props.navigation.navigate("EditPost", {})}}/>
                 <PostListView onmore={(cb) => {moreForumList(cb);}} onrefresh={(cb) => {refreshForumList(cb);}} data={this.state.data} func={(e) => this._onSelect(e)}/>
             </SubFrame>
         );
@@ -89,6 +90,10 @@ export const Forum = StackNavigator(
             screen: Post,
             path: 'post/:id',
         },
+        EditPost: {
+            screen: EditPost,
+            path: 'post/new',
+        }
     },
     {
         initialRouteName: 'Index',

@@ -86,7 +86,6 @@ export class Login extends Component {
                 email: this.state.email,
                 passwd: this.state.passwd,
             }, (state, data) => {
-                console.log(data);
                 if (state == true) {
                     GlobalFuncs.globalAlert.navAlert("success", "Welcome", `Welcome Back! ${Me.username}.`);
                     setTimeout(() => {this.props.navigation.goBack()}, 500);
@@ -95,6 +94,10 @@ export class Login extends Component {
                     this._startVerify();
                 } else {
                     GlobalFuncs.globalAlert.navAlert("error", `Error ${data.errorCode}`, data.errorMsg);
+                    this.setState({
+                        btnword: this.state.func == 2 ? "Register" : "Login",
+                        brn: true,
+                    });
                 }
                 this.setState({btn: CurrentState == -1 ? false : true});
             }, this.state.passwd.length <= 0, this.state.func == 1 ? "login" : "register");
@@ -121,7 +124,7 @@ export class Login extends Component {
                     func: 1,
                     btnword: "Login",
                 });
-                console.log(this._email._changeValue(Me.email));
+                this._email._changeValue(Me.email);
             }
             if (Me.userid != "" && Me.token != "") {
                 console.log("Verify Last Login.");

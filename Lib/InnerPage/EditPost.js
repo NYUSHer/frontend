@@ -3,9 +3,10 @@ import { TouchableOpacity, Button, Platform, ScrollView, StatusBar, View, Text, 
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Title, SubFrame, GlobalFont, globalStyle, UserShownRow } from "../SubComponents.js";
+import { Me } from "../Util.js";
 
 var goBackToList = null;
-export class Post extends Component {
+export class EditPost extends Component {
     static navigationOptions = {
         tabBarLabel: 'Home',
         tabBarIcon: ({ tintColor, focused }) => (
@@ -42,7 +43,7 @@ export class Post extends Component {
                         }}
                     >
                         <Ionicons
-                            name='ios-arrow-down'
+                            name='ios-close'
                             size={40}
                             style={{ color: "#000" }}
                         />
@@ -51,13 +52,14 @@ export class Post extends Component {
                     {/* <Text style={{fontSize: 30, fontFamily: GlobalFont, width: 20}}>{this.props.data.id}</Text> */}
                     {/* <Image style={{width: 40, height: 40, borderRadius: 20}} source={{uri: state.params.raw.img}}/> */}
                         <View style={{marginLeft: 15}}>
-                            <Text style={{fontSize: 18, fontFamily: GlobalFont, fontWeight: "bold", fontSize: 32,}} numberOfLines={1}>{state.params.raw.title}</Text>
+                            <ExInput ref={(c) => this._title = c} id="title" name="Post Title" type="email-address" />
+                            <Text style={{fontSize: 18, fontFamily: GlobalFont, fontWeight: "bold", fontSize: 32,}} numberOfLines={1}>New Post</Text>
                         </View>
                     </View>
                 </View>
-                {/* <Text style={[{fontSize: 12, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]} numberOfLines={1}>{state.params.raw.content}</Text> */}
-                <UserShownRow style={{marginHorizontal: 30, marginTop: -10}} userid={state.params.raw.author} />
+                <UserShownRow style={{marginHorizontal: 30, marginTop: -10}} userid={Me.userid} />
             </SubFrame>
         );
     }
 }
+

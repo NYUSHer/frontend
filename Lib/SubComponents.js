@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, StyleSheet, TouchableOpacity, RefreshControl, TouchableHighlight, Platform, ScrollView, StatusBar, View, Text, Image, TextInput, PixelRatio } from 'react-native';
+import { User } from "./Util.js";
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SortableListView from 'react-native-sortable-listview'
@@ -128,6 +129,58 @@ export class UserAvatar extends Component {
                 </TouchableHighlight>
             )
         }
+    }
+}
+
+export class UserShownRow extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            user: new User(),
+            username: "",
+            avatar: "",
+        };
+    }
+
+    componentDidMount() {
+        this.state.user.userid = this.props.userid;
+        this.state.user.fetchInfo((state, data) => {
+            console.log(this.state.user);
+            this.setState({
+                username: this.state.user.username,
+                avatar: this.state.user.avatar,
+            });
+        });
+    }
+
+    _changeInfo() {
+        dthat.setState({
+            avatar: this.state.user.avatar,
+            username: this.state.user.username
+        });
+    }
+
+    render() {
+        return (
+            <View style={[{
+                alignSelf: 'stretch',
+                height: 55,
+                justifyContent: 'flex-start',
+                flexDirection: 'row',
+                marginHorizontal: 15,
+                marginRight: 30
+            }, this.props.style]}>
+                <UserAvatar uri={this.state.avatar || this.state.username || "Anonymous"}/>
+                <View style={{marginLeft: 15, flex: 1}}>
+                    <Text 
+                        allowFontScaling={false}
+                        style={{marginTop: 8, fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont}}
+                        numberOfLines={1}
+                        multiline={false}
+                    >{this.state.username}</Text>
+                </View>
+            </View>
+        )
     }
 }
 

@@ -153,7 +153,8 @@ export class User {
         HttpPost("/auth/info", {
             userid: this.userid,
         }, (state, data) => {
-            // console.log(data);
+            console.log("Get User Info:");
+            console.log(data);
             if (state) {
                 this.username = data.username;
                 this.email = data.email;
@@ -176,14 +177,16 @@ export class User {
         }
         HttpPost("/auth/set", {
             username: this.username,
-            avatar: this.avatar,
+            imageuri: this.avatar,
             motto: this.motto,
             // passwdtoken: this.passwdtoken,
         }, (state, data) => {
             if (state) {
+                console.log("Set User Info:");
+                console.log(data);
                 this.username = data.username;
                 this.email = data.email;
-                this.avatar = data.avatar;
+                this.avatar = data.imageuri;
                 this.motto = data.motto;
                 if (data.hasOwnProperty('token')) this.token = data.token;
                 callback(true, this);
@@ -217,6 +220,7 @@ export var getMe = (callback) => {
                 Me.clear();
                 CurrentState = 0;
             }
+            console.log(CurrentState);
             callback(false, data);
         }
     })
@@ -236,20 +240,27 @@ export var login = (loginInfo, callback, byMail = false, param="login") => {
     Me.email = loginInfo.email;
     Me.passwdtoken = byMail ? "NYUSHer_by_email_login" : PasswdTokenfy(loginInfo.passwd);
 
+    postData = {
+        email: Me.email,
+        passwdtoken: Me.passwdtoken,
+    };
+
+    if (param == "register") {
+        postData.username = postData.email.split("@")[0];
+    }
+
     // Export Debugging Message
     //console.log("Login with: " + `email=${Me.email}&` + `passwdtoken=${Me.passwdtoken}`);
 
-    HttpPost("/auth/" + param, {
-        email: Me.email,
-        passwdtoken: Me.passwdtoken,
-    }, (state, data) => {
+    HttpPost("/auth/" + param, postData, (state, data) => {
         if (state) {
-            console.log(data);
+            // console.log(data);
             Me.userid = data.userid;
             Me.token = data.token;
             setMeInfoToStorage(Me.userid, Me.token, Me.email);
             getMe(callback);
         } else {
+            CurrentState = 0;
             callback(false, data);
         }
     });
@@ -285,6 +296,7 @@ export async function getMeInfoFromStorage (callback) {
             console.log("Load User From Storage.");
             console.log(Me);
         } else {
+            CurrentState = 0;
             console.log("No Local User Found.");
             Me.init();
         }
