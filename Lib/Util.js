@@ -246,6 +246,10 @@ export var login = (loginInfo, callback, byMail = false, param="login") => {
     };
 
     if (param == "register") {
+        if (byMail) {
+            callback(false, {errorCode: 51, errorMsg: "You cannot leave the password empty while registering."});
+            return;
+        }
         postData.username = postData.email.split("@")[0];
     }
 
