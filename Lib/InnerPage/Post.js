@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { TouchableOpacity, Button, Platform, ScrollView, StatusBar, View, Text, Image, KeyboardAvoidingView} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Title, SubFrame, GlobalFont, globalStyle, UserShownRow, ExInput, GlobalColor } from "../SubComponents.js";
+import { Title, SubFrame, GlobalFont, globalStyle, UserShownRow, ExInput, GlobalColor, fontSizeScaler } from "../SubComponents.js";
 
 var goBackToList = null;
 export class Post extends Component {
@@ -64,17 +64,17 @@ export class Post extends Component {
                         />
                     </TouchableOpacity>
                     <View style={[{flexDirection: "row", marginTop: 30, marginBottom: 10,}]}>
-                    {/* <Text style={{fontSize: 30, fontFamily: GlobalFont, width: 20}}>{this.props.data.id}</Text> */}
+                    {/* <Text style={{fontSize: 30 * fontSizeScaler, fontFamily: GlobalFont, width: 20}}>{this.props.data.id}</Text> */}
                     {/* <Image style={{width: 40, height: 40, borderRadius: 20}} source={{uri: state.params.raw.img}}/> */}
                         <View style={{marginLeft: 15}}>
-                            <Text style={{fontSize: 18, fontFamily: GlobalFont, fontWeight: "bold", fontSize: 32,}} numberOfLines={1}>{state.params.raw.title}</Text>
+                            <Text style={{fontFamily: GlobalFont, fontWeight: "bold", fontSize: 32 * fontSizeScaler,}} numberOfLines={1}>{state.params.raw.title}</Text>
                         </View>
                     </View>
                 </View>
-                {/* <Text style={[{fontSize: 12, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]} numberOfLines={1}>{state.params.raw.content}</Text> */}
+                {/* <Text style={[{fontSize: 12 * fontSizeScaler, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]} numberOfLines={1}>{state.params.raw.content}</Text> */}
                 <UserShownRow style={{marginHorizontal: 30, marginTop: -10}} userid={state.params.raw.author} />
 
-                <Text style={[{flex: 1, fontSize: 18, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]}>{state.params.raw.content}</Text>
+                <Text style={[{flex: 1, fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]}>{state.params.raw.content}</Text>
 
                 <KeyboardAvoidingView style={{
                         paddingBottom: 20
@@ -90,7 +90,7 @@ export class Post extends Component {
                                 style={{ color: GlobalColor.blue, paddingTop: 5, marginRight: -15, marginLeft: 15 }}
                             />
                         </TouchableOpacity>
-                        <ExInput oninputend={(a,b,c) => {this._oninputend(a,b,c);}} innerstyle={{fontWeight: "100", fontSize: 18}} style={{flex: 1}} ref={(c) => this._comment = c} id="comment" name={this.state.commentText} type="email-address" />
+                        <ExInput oninputend={(a,b,c) => {this._oninputend(a,b,c);}} innerstyle={{fontWeight: "100", fontSize: 18 * fontSizeScaler}} style={{flex: 1}} ref={(c) => this._comment = c} id="comment" name={this.state.commentText} type="email-address" />
                         <TouchableOpacity
                         onPress={() => {}}
                         >

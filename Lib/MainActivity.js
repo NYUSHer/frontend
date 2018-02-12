@@ -6,7 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Dashboard } from "./Dashboard.js";
 import { Moment } from "./Moment.js";
 import { Forum } from "./Forum.js";
-import { globalStyle, GlobalFont, GlobalColor, GlobalFuncs } from "./SubComponents.js";
+import { globalStyle, GlobalFont, GlobalColor, GlobalFuncs, fontSizeScaler } from "./SubComponents.js";
 import { Login } from "./InnerPage/Login.js";
 import { Me, CurrentState } from "./Util.js";
 
@@ -32,7 +32,7 @@ export const MainAppEntry = TabNavigator({
     tabBarOptions: {
         activeTintColor: Platform.OS === 'ios' ? '#FF5964' : '#FFF',
         labelStyle: {
-            fontSize: 14,
+            fontSize: 14 * fontSizeScaler,
             fontFamily: GlobalFont,
             // color: '#888',
             marginBottom: 5,
