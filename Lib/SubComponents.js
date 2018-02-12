@@ -253,7 +253,7 @@ export class ExInput extends Component {
                     style={styles.ExInput}
                     placeholder={this.props.name}
                     autoCorrect={false}
-                    keyboardType={this.props.type == "passwd" ? "email-address" : this.props.type}
+                    keyboardType={this.props.type == "passwd" ? "default" : this.props.type}
                     secureTextEntry={this.props.type == "passwd" ? true : false}
                     multiline={false}
                     onChangeText={(e) => {this._onchange(e)}}

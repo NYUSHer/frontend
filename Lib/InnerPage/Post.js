@@ -42,7 +42,7 @@ export class Post extends Component {
                         }}
                     >
                         <Ionicons
-                            name='ios-arrow-back'
+                            name='ios-arrow-down'
                             size={40}
                             style={{ color: "#000" }}
                         />
