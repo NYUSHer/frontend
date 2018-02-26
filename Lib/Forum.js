@@ -100,6 +100,7 @@ export class ForumList extends Component {
                 style={{
                     flexDirection: "row",
                     marginHorizontal: 30,
+                    marginVertical: 3,
                     maxHeight: 35,
                     marginTop: -10}}>
                     {this.state.tags.map((item) => {

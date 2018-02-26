@@ -153,8 +153,8 @@ export class User {
         HttpPost("/auth/info", {
             userid: this.userid,
         }, (state, data) => {
-            console.log("Get User Info:");
-            console.log(data);
+            // console.log("Get User Info:");
+            // console.log(data);
             if (state) {
                 this.username = data.username;
                 this.email = data.email;

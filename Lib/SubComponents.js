@@ -155,7 +155,7 @@ export class UserShownRow extends Component {
     componentDidMount() {
         this.state.user.userid = this.props.userid;
         this.state.user.fetchInfo((state, data) => {
-            console.log(this.state.user);
+            // console.log(this.state.user);
             this.setState({
                 username: this.state.user.username,
                 avatar: this.state.user.avatar,
@@ -187,7 +187,7 @@ export class UserShownRow extends Component {
                         style={{marginTop: 8, fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont}}
                         numberOfLines={1}
                         multiline={false}
-                    >{this.state.username}</Text>
+                    >{this.state.username}{this.props.addons || ""}</Text>
                 </View>
             </View>
         )

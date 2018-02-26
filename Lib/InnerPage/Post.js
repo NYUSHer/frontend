@@ -28,8 +28,25 @@ export class Post extends Component {
         super(props);
         this.state = {
             commentText: "Write a comment.",
+            contentText: "Loading ...",
+            commentList: [{
+                cid: 1,
+                uid: 2,
+                content: "Example Comment",
+            }],
         }
     } 
+
+    componentDidMount() {
+        const {
+            goBack, state
+        } = this.props.navigation;
+        this._getPostInfo(state.params.raw.id);
+    }
+
+    _getPostInfo(id) {
+        console.log(id);
+    }
 
     _oninputend(id, text, that) {
         if (!this._comment || !text) return;
@@ -45,6 +62,7 @@ export class Post extends Component {
             goBack, state
         } = this.props.navigation;
         goBackToList = this.props.navigation.goBack;
+        let counter = 0;
         return (
             <SubFrame>
                 <View style={{flexDirection: "row"}}>
@@ -72,9 +90,30 @@ export class Post extends Component {
                     </View>
                 </View>
                 {/* <Text style={[{fontSize: 12 * fontSizeScaler, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]} numberOfLines={1}>{state.params.raw.content}</Text> */}
-                <UserShownRow style={{marginHorizontal: 30, marginTop: -10}} userid={state.params.raw.author} />
 
-                <Text style={[{flex: 1, fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]}>{state.params.raw.content}</Text>
+                <ScrollView style={{flex: 1, marginTop: -10,}}>
+                    <UserShownRow style={{marginHorizontal: 30}} userid={state.params.raw.author} />
+                    <Text style={[{fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]}>{this.state.contentText}</Text>
+                    {this.state.commentList.map((item) => {
+                        return (
+                            <View key={counter++} id={item.cid} style={{
+                                marginHorizontal: 30,
+                                paddingTop: 20,
+                                borderTopWidth: 1,
+                                borderTopColor: "#EAEAEA",
+                            }}>
+                                <UserShownRow style={{marginHorizontal: 0}} userid={item.uid} addons={(
+                                    <Text style={{color: "#AAA", fontSize: 12 * fontSizeScaler}}>&nbsp;&nbsp;<Ionicons
+                                    name='ios-undo-outline'
+                                    size={18}
+                                    style={{ color: "#AAA"}}
+                                />Reply</Text>
+                                )}/>
+                                <Text style={[{fontSize: 16 * fontSizeScaler, marginBottom: 20,}]}>{item.content}</Text>
+                            </View>
+                        );
+                    })}
+                </ScrollView>
 
                 <KeyboardAvoidingView style={{
                         paddingBottom: 8
