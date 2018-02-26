@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { Alert, Button, Platform, ScrollView, StatusBar, View, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Title, PostListView, SubFrame } from "./SubComponents.js";
+import { Title, PostListView, SubFrame, ExPill } from "./SubComponents.js";
 import { Post } from "./InnerPage/Post.js";
 import { EditPost } from "./InnerPage/EditPost.js";
 
 let forumData = {};
+let latestTags = [];
 var forumLen = 0;
 export var ForumNavigator = null;
 
@@ -23,6 +24,18 @@ var forumLayoutUnitTest = (num=3) => {
     forumLen += num;
 }
 forumLayoutUnitTest(12);
+
+var forumTageUnitTest = function () {
+    latestTags = [
+        "CS 249",
+        "Book Resell",
+        "Mac Rent",
+        "Math",
+        "药丸💊",
+        "Answer",
+    ];
+}
+forumTageUnitTest();
 
 var refreshForumList = (callback) => {
     for (var i = 0; i < forumLen; i++) {
@@ -58,6 +71,7 @@ export class ForumList extends Component {
         super();
         this.state = {
             data: forumData, //this.props.data
+            tags: latestTags,
         };
     }
 
@@ -70,11 +84,30 @@ export class ForumList extends Component {
         // ForumNavigator.navigate("Post", {id: e.id});
     }
 
+    _onPress(id) {
+        console.log(id);
+    }
+
     render() {
         ForumNavigator = this.props.navigation;
+        let counter = 0;
         return (
             <SubFrame>
                 <Title value="Forum" btn="+" onpress={() => {this.props.navigation.navigate("EditPost", {})}}/>
+                <ScrollView 
+                horizontal={true}
+                keyboardShouldPersistTaps="never"
+                style={{
+                    flexDirection: "row",
+                    marginHorizontal: 30,
+                    maxHeight: 35,
+                    marginTop: -10}}>
+                    {this.state.tags.map((item) => {
+                        return (
+                            <ExPill id={counter} key={counter++} onpress={(id) => {this._onPress(id);}}>{item}</ExPill>
+                        );
+                    })}
+                </ScrollView>
                 <PostListView onmore={(cb) => {moreForumList(cb);}} onrefresh={(cb) => {refreshForumList(cb);}} data={this.state.data} func={(e) => this._onSelect(e)}/>
             </SubFrame>
         );

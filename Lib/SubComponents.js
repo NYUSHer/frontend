@@ -3,7 +3,8 @@ import { Button, StyleSheet, TouchableOpacity, RefreshControl, TouchableHighligh
 import { User } from "./Util.js";
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import SortableListView from 'react-native-sortable-listview'
+import SortableListView from 'react-native-sortable-listview';
+import Forge from 'node-forge';
 
 export const GlobalFuncs = {
     globalAlert: null,
@@ -25,6 +26,12 @@ export const randomColor = function(key) {
     if (key in storagedColor) return storagedColor[key];
     storagedColor[key] = `rgb(${parseInt(Math.random() * 255)}, ${parseInt(Math.random() * 255)}, ${parseInt(Math.random() * 255)})`;
     return storagedColor[key];
+}
+
+export var generateColorByName = function(name) {
+    let hash = Forge.md.md5.create();
+    hash.update(name);
+    return "#" + hash.digest().toHex().substr(0, 6);
 }
 
 export const whiteRate = function(c) {
@@ -207,7 +214,7 @@ export class ListRowComponent extends Component {
                     {/* <Text style={{fontSize: 30 * fontSizeScaler, fontFamily: GlobalFont, width: 20}}>{this.props.data.id}</Text> */}
                     <Image style={{width: 40, height: 40, borderRadius: 20}} source={{uri: this.props.data.img}}/>
                     <View style={{marginLeft: 15}}>
-                        <Text allowFontScaling={false} style={{fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont}} numberOfLines={1}>{this.props.data.title}</Text>
+                        <Text allowFontScaling={false} style={{fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont, fontWeight: "bold"}} numberOfLines={1}>{this.props.data.title}</Text>
                         <Text allowFontScaling={false} style={{fontSize: 12 * fontSizeScaler, fontFamily: GlobalFont}} numberOfLines={1}>{this.props.data.content}</Text>
                     </View>
                 </View>
@@ -414,6 +421,22 @@ export class ExButton extends Component {
     }
 }
 
+export class ExPill extends Component {
+    render() {
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => { if (this.props.onpress) this.props.onpress(this.props.id); }}
+                    style={[styles.ExPill, {backgroundColor: generateColorByName(this.props.children.toString())}]}
+                    disabled={this.props.disabled ? this.props.disabled : false}
+                >
+                    <Text allowFontScaling={false} style={styles.ExPillText}>{this.props.children}</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+}
+
 export class Br extends Component {
     render() {
         return (
@@ -486,5 +509,21 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontFamily: GlobalFont,
         marginHorizontal: "auto",
+    },
+    ExPill: {
+        height: 25,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#DDD",
+        marginHorizontal: 5,
+        marginBottom: 5,
+        borderRadius: 25,
+    },
+    ExPillText: {
+        color: "#FFF",
+        fontSize: 14 * fontSizeScaler,
+        fontWeight: "500",
+        fontFamily: GlobalFont,
+        marginHorizontal: 10,
     },
 });

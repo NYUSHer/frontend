@@ -32,7 +32,7 @@ export class Post extends Component {
     } 
 
     _oninputend(id, text, that) {
-        if (!this._comment) return;
+        if (!this._comment || !text) return;
         
         this.setState({
             commentText: text,
@@ -77,7 +77,7 @@ export class Post extends Component {
                 <Text style={[{flex: 1, fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]}>{state.params.raw.content}</Text>
 
                 <KeyboardAvoidingView style={{
-                        paddingBottom: 20
+                        paddingBottom: 8
                     }} behavior='position'>
                     <View style={{flexDirection: "row"}}>
                         <TouchableOpacity
@@ -101,6 +101,7 @@ export class Post extends Component {
                             />
                         </TouchableOpacity>
                     </View>
+                    <Text style={[{fontSize: 12 * fontSizeScaler, fontFamily: GlobalFont,color: "#666", marginHorizontal: 15}]} numberOfLines={1}>The Thread is open for comment.</Text>
                 </KeyboardAvoidingView>
             </SubFrame>
         );
