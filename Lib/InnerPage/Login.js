@@ -11,6 +11,14 @@ const PASS_LOGIN_HINT  = "You Are Now Using PassCode to Login The Service.";
 var checkingThread = null;
 
 export class Login extends Component {
+
+    _beforeGoBack() {
+        console.log("Activating Login Trigger for " + Object.keys(GlobalFuncs.globalLoginTrigger).length + ".");
+        for (var fn in GlobalFuncs.globalLoginTrigger) {
+            GlobalFuncs.globalLoginTrigger[fn]();
+        }
+    }
+
     _checkStateOfVerify(successCb=()=>{}, failCb=()=>{}) {
         Me.fetchInfo((state, data) => {
             if (state) {
@@ -42,7 +50,7 @@ export class Login extends Component {
         checkingThread = setInterval(() => {
             itvlThis._checkStateOfVerify((state, data) => {
                 GlobalFuncs.globalAlert.navAlert("success", "Welcome", `Welcome Back! ${Me.username}.`);
-                setTimeout(() => {itvlThis.props.navigation.goBack()}, 500);
+                setTimeout(() => {itvlThis._beforeGoBack(); itvlThis.props.navigation.goBack()}, 500);
             }, (state, data) => {
                 GlobalFuncs.globalAlert.navAlert("error", `Error ${data.errorCode}`, data.errorMsg);
                 itvlThis.setState({btn: CurrentState == -1 ? false : true});
@@ -95,7 +103,8 @@ export class Login extends Component {
                         if (GlobalFuncs.globalDashboardUF != null) {
                             GlobalFuncs.globalDashboardUF();
                         }
-                        this.props.navigation.goBack()
+                        this._beforeGoBack();
+                        this.props.navigation.goBack();
                     }, 500);
                 } else if (data.errorCode == 102) {
                     GlobalFuncs.globalAlert.navAlert("warn", "Verifying ...", `Please go and check your mailbox.`);
@@ -140,7 +149,7 @@ export class Login extends Component {
                     this.setState({btn: CurrentState == -1 ? false : true});
                     if (CurrentState == 1) {
                         GlobalFuncs.globalAlert.navAlert("success", "Welcome", `Welcome Back! ${Me.username}.`);
-                        setTimeout(() => {this.props.navigation.goBack()}, 500);
+                        setTimeout(() => {this._beforeGoBack(); this.props.navigation.goBack()}, 500);
                     } else if(CurrentState == -1) {
                         GlobalFuncs.globalAlert.navAlert("warn", "Verifying ...", `Please go and check your mailbox.`);
                         this._startVerify();

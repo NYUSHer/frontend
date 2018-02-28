@@ -63,7 +63,8 @@ export var HttpPost = (route, data, callback) => {
         body: formData,
     }).then((response) => response.json())
       .then((jsonData) => {
-        if (jsonData.state) {
+        // console.log(jsonData);
+        if (jsonData.state) { // || !jsonData.hasOwnProperty("state")) {
             callback(true, jsonData.data);
         } else {
             callback(false, jsonData.error);
@@ -199,6 +200,63 @@ export class User {
                 callback(false, data);
             }
             
+        });
+    }
+}
+
+export class PostApi {
+    /**
+     * Fetch post lists from the server.
+     * 
+     * @param {offset} offset 
+     * @param {limit} limit 
+     * @param {callback} callback 
+     */
+    fetchList(offset, limit, callback) {
+        HttpPost("/post/list", {
+            offset: offset,
+            size: limit,
+        }, (state, data) => {
+            if (state) {
+                callback(data);
+            } else {
+                callback({"count": 0, postlist: []});
+            }
+        });
+    }
+
+    /**
+     * Get info of a post
+     * @param {pid} pid 
+     * @param {callback} callback 
+     */
+    fetchPost(pid, callback) {
+        HttpPost("/post/get", {
+            pid: pid,
+        }, (state, data) => {
+            if (state) {
+                callback(data);
+            } else {
+                callback(null);
+            }
+        });
+    }
+
+    /**
+     * 
+     * @param {json} data 
+     * @param {callback} callback 
+     */
+    post(data, callback) {
+        data["authorid"] = Me.userid;
+        HttpPost("/post/submit", data, (state, data) => {
+            callback(state, data);
+        });
+    }
+
+    delete(pid, callback) {
+        HttpPost("/post/delete", {pid: pid}, (state, data) => {
+            callback(state, data);
         });
     }
 }

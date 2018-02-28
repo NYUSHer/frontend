@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button, StyleSheet, TouchableOpacity, RefreshControl, TouchableHighlight, Platform, ScrollView, StatusBar, View, Text, Image, TextInput, PixelRatio } from 'react-native';
-import { User } from "./Util.js";
+import { User, Me } from "./Util.js";
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SortableListView from 'react-native-sortable-listview';
@@ -10,6 +10,7 @@ export const GlobalFuncs = {
     globalAlert: null,
     globalDashboardUF: null,
     globalPopups: null,
+    globalLoginTrigger: {},
 };
 export const GlobalFont = (Platform.OS === 'ios' ? "QuickSand" : "Quicksand-Bold");
 export const GlobalColor = {
@@ -24,14 +25,16 @@ export const fontSizeScaler = Platform.OS === 'ios' ? 1 : (PixelRatio.getFontSca
 export var storagedColor = {};
 export const randomColor = function(key) {
     if (key in storagedColor) return storagedColor[key];
-    storagedColor[key] = `rgb(${parseInt(Math.random() * 255)}, ${parseInt(Math.random() * 255)}, ${parseInt(Math.random() * 255)})`;
+    storagedColor[key] = generateColorByName(key + "FRONTEND");
     return storagedColor[key];
 }
 
 export var generateColorByName = function(name) {
     let hash = Forge.md.md5.create();
     hash.update(name);
-    return "#" + hash.digest().toHex().substr(0, 6);
+    let hashstr = hash.digest().toHex();
+
+    return `rgb(${parseInt("0x" + hashstr.substr(0,2))},${parseInt("0x" + hashstr.substr(2,2))},${parseInt("0x" + hashstr.substr(4,2))})`;
 }
 
 export const whiteRate = function(c) {
@@ -142,6 +145,54 @@ export class UserAvatar extends Component {
     }
 }
 
+export class PostToolRow extends Component {
+    generateControlPanel() {
+        if (this.props.uid == Me.userid) {
+            return (
+                <View style={{flexDirection: "row-reverse"}}>
+                    <TouchableOpacity
+                        onPress={() => {this.props.control(this.props.pid, "delete", this.props.role);}}
+                        style={{marginRight: 15}}
+                    >
+                    <Ionicons
+                            name='ios-trash-outline'
+                            size={23}
+                            style={{ color: "red", paddingTop: 5, marginRight: 15, marginBottom: 5 }}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => {this.props.control(this.props.pid, "edit", this.props.role);}}
+                    >
+                    <Ionicons
+                            name='ios-create-outline'
+                            size={23}
+                            style={{ color: "#AAA", paddingTop: 5, marginRight: 15, marginBottom: 5 }}
+                        />
+                    </TouchableOpacity>
+                </View>
+            )
+        }
+    }
+
+    render() {
+        return(
+            <View style={{flexDirection: "row-reverse"}}>
+                {this.generateControlPanel()}
+                <TouchableOpacity
+                    onPress={() => {this.props.control(this.props.pid, "reply", this.props.role);}}
+                >
+                <Ionicons
+                        name='ios-undo-outline'
+                        size={23}
+                        style={{ color: GlobalColor.blue, paddingTop: 5, marginRight: 15, marginBottom: 5 }}
+                    />
+                </TouchableOpacity>
+                <Text style={{ flex:1, color: "#CCC", marginLeft: 30, paddingTop: 10 }}>{this.props.cate}</Text>
+            </View>
+        );
+    }
+}
+
 export class UserShownRow extends Component {
     constructor(props) {
         super(props);
@@ -212,7 +263,7 @@ export class ListRowComponent extends Component {
                 onPress={this._onPress}>
                 <View style={{flexDirection: "row", marginHorizontal: 30, marginRight: 70}}>
                     {/* <Text style={{fontSize: 30 * fontSizeScaler, fontFamily: GlobalFont, width: 20}}>{this.props.data.id}</Text> */}
-                    <Image style={{width: 40, height: 40, borderRadius: 20}} source={{uri: this.props.data.img}}/>
+                    <UserAvatar uri={this.props.data.img}/>
                     <View style={{marginLeft: 15}}>
                         <Text allowFontScaling={false} style={{fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont, fontWeight: "bold"}} numberOfLines={1}>{this.props.data.title}</Text>
                         <Text allowFontScaling={false} style={{fontSize: 12 * fontSizeScaler, fontFamily: GlobalFont}} numberOfLines={1}>{this.props.data.content}</Text>
@@ -303,6 +354,10 @@ export class ExInput extends Component {
         }
     }
 
+    _focus() {
+        this._instance.focus();
+    }
+
     _changeValue(v) {
         this.setState({text: v});
     }
@@ -318,7 +373,8 @@ export class ExInput extends Component {
             <View style={this.props.style}>
                 <TextInput 
                     allowFontScaling={false}
-                    autoCapitalize = {"none"}
+                    autoCapitalize={"none"}
+                    ref={(c) => this._instance = c}
                     style={[styles.ExInput, this.props.innerstyle]}
                     placeholder={this.props.name}
                     autoCorrect={false}

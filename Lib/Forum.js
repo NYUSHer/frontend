@@ -2,13 +2,16 @@ import React, { Component } from 'react';
 import { Alert, Button, Platform, ScrollView, StatusBar, View, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Title, PostListView, SubFrame, ExPill } from "./SubComponents.js";
+import { Title, PostListView, SubFrame, ExPill, GlobalFuncs } from "./SubComponents.js";
 import { Post } from "./InnerPage/Post.js";
+import { PostApi } from "./Util.js";
 import { EditPost } from "./InnerPage/EditPost.js";
 
 let forumData = {};
 let latestTags = [];
+let postlist = null;
 var forumLen = 0;
+var limit = 15;
 export var ForumNavigator = null;
 
 var forumLayoutUnitTest = (num=3) => {
@@ -23,7 +26,7 @@ var forumLayoutUnitTest = (num=3) => {
     }
     forumLen += num;
 }
-forumLayoutUnitTest(12);
+// forumLayoutUnitTest(12);
 
 var forumTageUnitTest = function () {
     latestTags = [
@@ -37,22 +40,48 @@ var forumTageUnitTest = function () {
 }
 forumTageUnitTest();
 
+var fetchData = (offset, limit, callback=() => {}, clear=false) => {
+    (new PostApi).fetchList(offset, limit, (data) => {
+        let count = parseInt(data.count);
+        if (clear) {
+            for (var k in forumData) {
+                delete forumData[k];
+            }
+        }
+        for (let i = 0; i < count; i++) {
+            let d = data.postlist[i];
+            forumData[-d.pid] = {
+                title: d.title,
+                id: d.pid,
+                content: d.content.trim().substr(0, 50),
+                img: d.user_avatar || d.user_name,//"https://storage-1.nya.vc/3n6EvDoG",
+                author: d.authorid,
+            }
+        }
+        forumLen = Object.keys(forumData).length;
+        postlist.setState({
+            data: forumData
+        })
+        console.log(`fetched data from ${offset} to ${offset + limit}`);
+        console.log(data);
+
+        callback();
+    });
+} 
+
 var refreshForumList = (callback) => {
-    for (var i = 0; i < forumLen; i++) {
-        delete forumData[i];
-    }
-    forumLen  = 0;
-    forumLayoutUnitTest(12);
-    callback();
+    forumLen = 0;
+    moreForumList(callback, true);
 }
 
-var moreForumList = (callback) => {
-    if (forumLen > 50) {
-        callback();
-        return;
-    }
-    forumLayoutUnitTest();
-    callback();
+var moreForumList = (callback, clear=false) => {
+    console.log(`fetching data from ${forumLen} to ${forumLen + limit}`);
+    fetchData(forumLen, limit, callback, clear);
+}
+
+if (!("forum" in GlobalFuncs.globalLoginTrigger)) {
+    console.log("Register forum in Login Trigger.");
+    GlobalFuncs.globalLoginTrigger["forum"] = refreshForumList;
 }
 
 export class ForumList extends Component {
@@ -109,7 +138,7 @@ export class ForumList extends Component {
                         );
                     })}
                 </ScrollView>
-                <PostListView onmore={(cb) => {moreForumList(cb);}} onrefresh={(cb) => {refreshForumList(cb);}} data={this.state.data} func={(e) => this._onSelect(e)}/>
+                <PostListView ref={(c) => postlist = c} onmore={(cb) => {moreForumList(cb);}} onrefresh={(cb) => {refreshForumList(cb);}} data={this.state.data} func={(e) => this._onSelect(e)}/>
             </SubFrame>
         );
     }
