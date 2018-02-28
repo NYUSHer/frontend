@@ -133,7 +133,7 @@ export class Post extends Component {
                             margin: 30,
                             marginBottom: 20,
                             marginRight: -10,
-                            paddingHorizontal: 10
+                            paddingHorizontal: 10,
                         }}
                     >
                         <Ionicons

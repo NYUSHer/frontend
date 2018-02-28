@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, StyleSheet, TouchableOpacity, RefreshControl, TouchableHighlight, Platform, ScrollView, StatusBar, View, Text, Image, TextInput, PixelRatio } from 'react-native';
+import { Dimensions, Button, StyleSheet, TouchableOpacity, RefreshControl, TouchableHighlight, Platform, ScrollView, StatusBar, View, Text, Image, TextInput, PixelRatio } from 'react-native';
 import { User, Me } from "./Util.js";
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -20,7 +20,17 @@ export const GlobalColor = {
     "yellow_dark": "#FFA72C",
     "orange": "rgb(255, 100, 0)",
 }
-export const fontSizeScaler = Platform.OS === 'ios' ? 1 : (PixelRatio.getFontScale() / PixelRatio.get());
+
+const deviceWidth  = Dimensions.get('window').width;
+const deviceHeight = Dimensions.get('window').height;
+const fontScale  = PixelRatio.getFontScale();
+const pixelRatio = PixelRatio.get();
+const w2 = 750  / 2;
+const h2 = 1334 / 2;
+const scale = Math.min(deviceHeight / h2, deviceWidth / w2);
+export const fontSizeScaler = Platform.OS === 'ios' ? 1 : 1 / (scale * pixelRatio / fontScale / 2);
+
+console.log("fontScale: " + fontSizeScaler);
 
 export var storagedColor = {};
 export const randomColor = function(key) {

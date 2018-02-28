@@ -12,6 +12,26 @@ import { Me, CurrentState } from "./Util.js";
 
 var that = null;
 
+let tabBarOption = {
+    showIcon: true,
+    labelStyle: {
+        fontSize: 14 * fontSizeScaler,
+        fontFamily: GlobalFont,
+        color: '#888',
+        marginBottom: 5,
+    },
+    style: {
+        height: 60,
+        backgroundColor: "#FFF",
+    }
+}
+
+if (Platform.OS !== "ios") {
+    tabBarOption.inactiveTintColor = '#000';
+    tabBarOption.activeTintColor = '#999';
+    tabBarOption.labelStyle.color = "#000";
+}
+
 export const MainAppEntry = TabNavigator({
     Dashboard: {
         screen: Dashboard
@@ -25,23 +45,11 @@ export const MainAppEntry = TabNavigator({
 },{
     initialRouteName: 'Main',
     animationEnabled: true,
-    // tabBarPosition: 'bottom',
+    tabBarPosition: 'bottom',
     showIcon: true,
     swipeEnabled: true,
     backBehavior: 'Main',
-    tabBarOptions: {
-        activeTintColor: Platform.OS === 'ios' ? '#FF5964' : '#FFF',
-        labelStyle: {
-            fontSize: 14 * fontSizeScaler,
-            fontFamily: GlobalFont,
-            // color: '#888',
-            marginBottom: 5,
-        },
-        style: {
-            height: 60,
-            backgroundColor: "#FFF",
-        }
-    },
+    tabBarOptions: tabBarOption,
 });
 
 export class MainAppEntryWrapper extends Component {

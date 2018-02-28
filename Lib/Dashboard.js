@@ -97,7 +97,7 @@ export class Dashboard extends Component {
         tabBarIcon: ({ tintColor, focused }) => (
             <Ionicons
               name={focused ? 'ios-browsers' : 'ios-browsers-outline'}
-              size={26}
+              size={26 * fontSizeScaler}
               style={{ color: tintColor }}
             />
         ),

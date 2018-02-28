@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Alert, Button, Platform, ScrollView, StatusBar, View, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Title, PostListView, SubFrame, ExPill, GlobalFuncs } from "./SubComponents.js";
+import { Title, PostListView, SubFrame, ExPill, GlobalFuncs, fontSizeScaler } from "./SubComponents.js";
 import { Post } from "./InnerPage/Post.js";
 import { PostApi } from "./Util.js";
 import { EditPost } from "./InnerPage/EditPost.js";
@@ -90,7 +90,7 @@ export class ForumList extends Component {
         tabBarIcon: ({ tintColor, focused }) => (
             <Ionicons
               name={focused ? 'ios-home' : 'ios-home-outline'}
-              size={26}
+              size={26 * fontSizeScaler}
               style={{ color: tintColor }}
             />
         ),

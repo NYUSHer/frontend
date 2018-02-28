@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Button, Platform, ScrollView, StatusBar, View, Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Title, SubFrame } from "./SubComponents.js";
+import { Title, SubFrame, fontSizeScaler } from "./SubComponents.js";
 
 export class Moment extends Component {
     static navigationOptions = {
@@ -10,7 +10,7 @@ export class Moment extends Component {
         tabBarIcon: ({ tintColor, focused }) => (
             <Ionicons
               name={focused ? 'ios-ionic' : 'ios-ionic-outline'}
-              size={26}
+              size={26 * fontSizeScaler}
               style={{ color: tintColor }}
             />
         ),
