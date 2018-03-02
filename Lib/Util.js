@@ -2,17 +2,17 @@ import { AsyncStorage, Alert } from 'react-native';
 import { GlobalFuncs } from './SubComponents.js';
 import Forge from 'node-forge';
 
-export const BASEURL = "http://nyusher.nya.vc:8080";
+export const BASEURL = "https://nyusher.nya.vc:6680";
 export var Me = null;
 
-/*
+/**
  * -1: processing
  *  1: login success
  *  0: no login
  */
 export var CurrentState = 0;
 
-/*
+/**
  * turn passwd into token
  */
 export var PasswdTokenfy = (passwd) => {
@@ -21,7 +21,7 @@ export var PasswdTokenfy = (passwd) => {
     return md.digest().toHex();
 }
 
-/*
+/**
  * email check
  * Return whether the email address is valid
  */
@@ -30,7 +30,7 @@ export var EmailOfflineValidationCheck = (email) => {
     return (email.match(reg) != null);
 }
 
-/*
+/**
  * password check
  * Return whether the password is valid
  */
@@ -40,28 +40,41 @@ export var PasswdOfflineValidationCheck = (passwd) => {
     else return (passwd.match(reg) != null);
 }
 
-/*
+/**
  * Global Token-With Http Post Func
  */
-export var HttpPost = (route, data, callback) => {
+export var HttpPost = (route, data, callback, method="POST") => {
     let formData = new FormData();
+    let quest = "";
     for (var k in data) {
         formData.append(k, data[k]);
     }
+    if (method == "GET") {
+        quest = "?";
+        for (var k in data) {
+            quest += (k + '=' + (""+data[k]).replace("&", "") + '&');
+        }
+        quest = quest.substr(0, quest.length - 1);
+    }
+    console.log(`${method} ${BASEURL}${route}${quest}`);
+    console.log(formData);
     // console.log("------ New Post ------");
     // console.log({
     //     'token': Me.token,
     //     'userid'  : Me.userid,
     // });
     // console.log(formData);
-    fetch(`${BASEURL}${route}`, {
-        method: 'POST',
+
+    let fetchDataParams = {
+        method: method,
         headers: {
             'token': Me.token,
-            'userid'  : Me.userid,
+            'userid': Me.userid,
         },
-        body: formData,
-    }).then((response) => response.json())
+    };
+    if (method != "GET") fetchDataParams.body = formData;
+
+    fetch(`${BASEURL}${route}${quest}`, fetchDataParams).then((response) => response.json())
       .then((jsonData) => {
         // console.log(jsonData);
         if (jsonData.state) { // || !jsonData.hasOwnProperty("state")) {
@@ -76,10 +89,10 @@ export var HttpPost = (route, data, callback) => {
     });
 }
 
-export async function AsyncHttpPost(route, data) {
+export async function AsyncHttpPost(route, data, method="POST") {
     try {
         let response = await fetch(`${BASEURL}${route}`, {
-            method: 'POST',
+            method: method,
             mode: 'cors',
             headers: {
                 'token': Me.token,
@@ -261,7 +274,60 @@ export class PostApi {
     }
 }
 
-/*
+export class CommentApi {
+    /**
+     * Fetch post lists from the server.
+     * 
+     * @param {offset} offset 
+     * @param {limit} limit 
+     * @param {callback} callback 
+     */
+    fetchList(pid, offset, limit, callback) {
+        HttpPost("/post/comment", {
+            pid: pid,
+            offset: offset,
+            size: limit,
+        }, (state, data) => {
+            if (state) {
+                callback(data);
+            } else {
+                callback({"count": 0, postlist: []});
+            }
+        }, "GET");
+    }
+
+    /**
+     * 
+     * @param {json} data 
+     * @param {callback} callback 
+     */
+    post(data, callback) {
+        HttpPost("/post/comment", data, (state, data) => {
+            callback(state, data);
+        }, "POST");
+    }
+
+    /**
+     * 
+     * @param {json} data 
+     * @param {callback} callback 
+     */
+    patch(cid, data, callback) {
+        HttpPost(`/post/comment/${cid}`, data, (state, data) => {
+            console.log(data);
+            callback(state, data);
+        }, "PATCH");
+    }
+
+    delete(cid, callback) {
+        HttpPost(`/post/comment/${cid}`, {}, (state, data) => {
+            console.log(data);
+            callback(state, data);
+        }, "DELETE");
+    }
+}
+
+/**
  * Error Code:
  *      101: Token 无效
  *      102: E-mail 登录未验证
@@ -289,7 +355,7 @@ export var getMe = (callback) => {
     })
 }
 
-/*
+/**
  * 51: empty email
  * 52: invalid email
  * 53: non-nyu email

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, Button, Platform, ScrollView, StatusBar, View, Text, Image, KeyboardAvoidingView} from 'react-native';
+import { RefreshControl, TouchableOpacity, Button, Platform, ScrollView, StatusBar, View, Text, Image, KeyboardAvoidingView} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Title, SubFrame, GlobalFont, globalStyle, PostToolRow, UserShownRow, ExInput, GlobalColor, fontSizeScaler, GlobalFuncs } from "../SubComponents.js";
-import { PostApi } from "../Util.js";
+import { PostApi, CommentApi } from "../Util.js";
 
 var goBackToList = null;
 export class Post extends Component {
@@ -32,11 +32,9 @@ export class Post extends Component {
             contentText: "Loading ...",
             contentTags: [],
             contentCate: "",
-            commentList: [{
-                cid: 1,
-                uid: 2,
-                content: "Example Comment",
-            }],
+            commentList: [],
+            refreshing: false,
+            loadMore: false,
         }
     } 
 
@@ -47,6 +45,34 @@ export class Post extends Component {
 
         this.commentTo = state.params.raw.id;
         this._getPostInfo(state.params.raw.id);
+
+        this.coffset = 0;
+        this.commentModify = 0;
+        this.cdict = {};
+        this.udictt = {};
+        this.udictf = {};
+        this._getComment(state.params.raw.id);
+    }
+
+    _getComment(id, reset=false, callback=()=>{}) {
+        if (reset) this.coffset = 0;
+        console.log(`Get Comment from ${this.coffset} to ${this.coffset+10}`);
+        (new CommentApi).fetchList(id, this.coffset, 10, (data) => {
+            if (reset) {
+                this.cdict = {};
+                this.setState({commentList: data.postlist});
+            } else {
+                this.setState({commentList: this.state.commentList.concat(data.postlist)});
+            }
+            this.coffset += data.count;
+            // console.log(data.postlist);
+            for (let i = 0; i < data.postlist.length; i++) {
+                this.cdict[data.postlist[i].cid] = data.postlist[i];
+                this.udictt[data.postlist[i].uid] = data.postlist[i].user_name;
+                this.udictf[data.postlist[i].user_name] = data.postlist[i].uid;
+            }
+            callback();
+        });
     }
 
     _getPostInfo(id) {
@@ -55,7 +81,7 @@ export class Post extends Component {
                 this.setState({
                     contentText: data.content,
                     contentTags: data.tags.trim().split(","),
-                    contentCate: data.category
+                    contentCate: data.category,
                 });
             } else {
                 GlobalFuncs.globalAlert.navAlert("error", "Error", "System meets some problem while fetching the post, please refresh and try again.");
@@ -78,43 +104,134 @@ export class Post extends Component {
         if (!this._comment) return;
 
         let text = this._comment.state.text;
-        this.setState({
-            commentText: text,
-        });
-        this._comment.setState({text: ""});
+
+        let suid = ["" + this.props.navigation.state.params.raw.author];
+
+        let mentionReg = /\ @[\S]*/g;
+        let mentionResult = (" " + text).match(mentionReg);
+
+        if (mentionResult)
+            for (let i = 0; i < mentionResult.length; i++) {
+                let name = mentionResult[i].substr(2);
+                if (name in this.udictf) {
+                    let cuid = "" + this.udictf[name];
+                    if (suid.indexOf(cuid) == -1) suid.push(cuid);
+                }
+            }
+
+        console.log("CommentModify: " + this.commentModify);
+        console.log("Mentioned: " + suid.join(","));
+
+        if (!this.commentModify)
+            (new CommentApi).post({
+                content: text,
+                suid: suid.join(","),
+                pid: this.props.navigation.state.params.raw.id
+            }, (state, data) => {
+                if (state) {
+                    this._getComment(this.props.navigation.state.params.raw.id, true);
+                    this.setState({ commentText: text });
+                    this._comment.setState({text: ""});
+                    GlobalFuncs.globalAlert.navAlert("success", "Success!", "You set a comment successfully!");
+                } else {
+                    GlobalFuncs.globalAlert.navAlert("error", "Error!", "You are not allow to comment currently!");
+                }
+            });
+        else 
+            (new CommentApi).patch(Math.abs(this.commentTo), {
+                content: text,
+                suid: suid.join(","),
+            }, (state, data) => {
+                if (state) {
+                    this._getComment(this.props.navigation.state.params.raw.id, true);
+                    this.setState({ commentText: text });
+                    this._comment.setState({text: ""});
+                    this.commentModify = 0;
+                    GlobalFuncs.globalAlert.navAlert("success", "Success!", "You modify the comment successfully!");
+                } else {
+                    GlobalFuncs.globalAlert.navAlert("error", "Error!", "You are not allow to modify the comment currently!");
+                }
+            });
     }
 
     _control(pid, action, role) {
-        console.log(pid + ":" + action);
+        console.log(pid + ":" + action + "-" + role);
         if (action == "reply") {
-            if (role != "post") this.commentTo = -pid;
+            if (role != "post") {
+                this.commentTo = -pid;
+                this._comment.setState({
+                    text: `@${this.cdict[pid].user_name} ${this._comment.state.text.trim()} `,
+                });
+            }
+            this.commentModify = 0;
             this._comment._focus();
-        } else if (role == "post" && this.props.navigation.state.params.raw.id == pid) {
+        } else {
             switch (action) {
                 case "delete":
-                    (new PostApi).delete(this.props.navigation.state.params.raw.id, (data) => {
-                        if (data) {
-                            GlobalFuncs.globalAlert.navAlert("success", "Success!", "Your Post is Deleted!");
-                            if ("forum" in GlobalFuncs.globalLoginTrigger) {
-                                GlobalFuncs.globalLoginTrigger["forum"]();
+                    if (role == "post")
+                        (new PostApi).delete(this.props.navigation.state.params.raw.id, (state, data) => {
+                            if (state) {
+                                GlobalFuncs.globalAlert.navAlert("success", "Success!", "Your Post is Deleted!");
+                                if ("forum" in GlobalFuncs.globalLoginTrigger) {
+                                    GlobalFuncs.globalLoginTrigger["forum"]();
+                                }
+                                this.props.navigation.goBack();
+                            } else {
+                                GlobalFuncs.globalAlert.navAlert("error", "Error!", "Your cannot delete the post!");
                             }
-                            this.props.navigation.goBack();
-                        } else {
-                            GlobalFuncs.globalAlert.navAlert("error", "Error!", "Your cannot delete the post!");
-                        }
-                    });
+                        });
+                    else
+                        (new CommentApi).delete(pid, (state, data) => {
+                            if (state) {
+                                GlobalFuncs.globalAlert.navAlert("success", "Success!", "Your Comment is Deleted!");
+                                this._getComment(this.props.navigation.state.params.raw.id, true);
+                            } else {
+                                GlobalFuncs.globalAlert.navAlert("error", "Error!", "Your cannot delete the post!");
+                            }
+                        });
                     break;
                 case "edit":
-                    this.props.navigation.navigate("EditPost", {
-                        pid: this.props.navigation.state.params.raw.id,
-                        content: this.state.contentText,
-                        title: this.props.navigation.state.params.raw.title,
-                        onfinish: () => {this._getPostInfo(this.props.navigation.state.params.raw.id);}
-                    });
+                    if (role == "post") {
+                        this.props.navigation.navigate("EditPost", {
+                            pid: this.props.navigation.state.params.raw.id,
+                            content: this.state.contentText,
+                            title: this.props.navigation.state.params.raw.title,
+                            onfinish: () => {this._getPostInfo(this.props.navigation.state.params.raw.id);}
+                        });
+                    } else {
+                        console.log("Edit Comment");
+                        this.commentTo = -pid;
+                        this.commentModify = 1;
+                        this._comment._focus();
+                    }
                     break;
                 default:
                     break;
             }
+        }
+    }
+
+    _onRefresh() {
+        this.setState({refreshing: true});
+        this._getComment(this.props.navigation.state.params.raw.id, true, () => {
+            this.setState({refreshing: false});
+        });
+    }
+    
+    _onScroll(event) {
+        if(this.state.loadMore){
+            return;
+        }
+        let y = event.nativeEvent.contentOffset.y;
+        let height = event.nativeEvent.layoutMeasurement.height;
+        let contentHeight = event.nativeEvent.contentSize.height;
+        if(y+height>=contentHeight-20){
+            this.setState({
+                loadMore: true
+            });
+            this._getComment(this.props.navigation.state.params.raw.id, false, () => {
+                this.setState({loadMore: false});
+            });
         }
     }
 
@@ -123,7 +240,6 @@ export class Post extends Component {
             goBack, state
         } = this.props.navigation;
         goBackToList = this.props.navigation.goBack;
-        let counter = 0;
         return (
             <SubFrame>
                 <View style={{flexDirection: "row"}}>
@@ -152,13 +268,20 @@ export class Post extends Component {
                 </View>
                 {/* <Text style={[{fontSize: 12 * fontSizeScaler, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center]} numberOfLines={1}>{state.params.raw.content}</Text> */}
 
-                <ScrollView style={{flex: 1, marginTop: -10,}}>
+                <ScrollView style={{flex: 1, marginTop: -10,}}
+                    onScroll={this._onScroll.bind(this)}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this._onRefresh.bind(this)}
+                        />
+                    }>
                     <UserShownRow style={{marginHorizontal: 30}} userid={state.params.raw.author} />
-                    <Text style={[{fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont, marginBottom: 20,}, globalStyle.center, {marginRight: 10}]}>{this.state.contentText}</Text>
+                    <Text style={[{fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont, marginBottom: 40,}, globalStyle.center, {marginRight: 10}]}>{this.state.contentText}</Text>
                     <PostToolRow role="post" uid={state.params.raw.author} pid={state.params.raw.id} cate={this.state.contentCate} control={(a,b,c) => {this._control(a,b,c);}}/>
                     {this.state.commentList.map((item) => {
                         return (
-                            <View key={counter++} id={item.cid} style={{
+                            <View key={-item.cid} id={item.cid} style={{
                                 marginHorizontal: 30,
                                 paddingTop: 20,
                                 borderTopWidth: 1,
@@ -172,6 +295,7 @@ export class Post extends Component {
                                 />Reply</Text>
                                 )}/>
                                 <Text style={[{fontSize: 16 * fontSizeScaler, marginBottom: 20,}]}>{item.content}</Text>
+                                <PostToolRow style={{marginLeft: 0, fontSize: 11 * fontSizeScaler, fontWeight: "bold"}}role="comment" uid={item.uid} pid={item.cid} cate={(new Date(item.timestamp.trim())).toLocaleString()} control={(a,b,c) => {this._control(a,b,c);}}/>
                             </View>
                         );
                     })}

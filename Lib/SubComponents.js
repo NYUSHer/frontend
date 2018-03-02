@@ -28,7 +28,7 @@ const pixelRatio = PixelRatio.get();
 const w2 = 750  / 2;
 const h2 = 1334 / 2;
 const scale = Math.min(deviceHeight / h2, deviceWidth / w2);
-export const fontSizeScaler = Platform.OS === 'ios' ? 1 : 1 / (scale * pixelRatio / fontScale / 2);
+export const fontSizeScaler = Platform.OS === 'ios' ? 1 : (1 / (scale * pixelRatio / fontScale / 2) / 1.3333);
 
 console.log("fontScale: " + fontSizeScaler);
 
@@ -157,12 +157,14 @@ export class UserAvatar extends Component {
 
 export class PostToolRow extends Component {
     generateControlPanel() {
+        this.isGenerate = false;
         if (this.props.uid == Me.userid) {
+            this.isGenerate = true;
             return (
                 <View style={{flexDirection: "row-reverse"}}>
                     <TouchableOpacity
                         onPress={() => {this.props.control(this.props.pid, "delete", this.props.role);}}
-                        style={{marginRight: 15}}
+                        style={{marginRight: this.props.style ? 0 : 30}}
                     >
                     <Ionicons
                             name='ios-trash-outline'
@@ -186,10 +188,11 @@ export class PostToolRow extends Component {
 
     render() {
         return(
-            <View style={{flexDirection: "row-reverse"}}>
+            <View style={[{flexDirection: "row-reverse"}]}>
                 {this.generateControlPanel()}
                 <TouchableOpacity
                     onPress={() => {this.props.control(this.props.pid, "reply", this.props.role);}}
+                    style={{marginRight: (this.isGenerate || this.props.style) ? 0 : 30}}
                 >
                 <Ionicons
                         name='ios-undo-outline'
@@ -197,7 +200,7 @@ export class PostToolRow extends Component {
                         style={{ color: GlobalColor.blue, paddingTop: 5, marginRight: 15, marginBottom: 5 }}
                     />
                 </TouchableOpacity>
-                <Text style={{ flex:1, color: "#CCC", marginLeft: 30, paddingTop: 10 }}>{this.props.cate}</Text>
+                <Text style={[{ flex:1, color: "#CCC", marginLeft: 30, paddingTop: 10 }, this.props.style]}>{this.props.cate}</Text>
             </View>
         );
     }
@@ -354,7 +357,7 @@ export class PostListView extends Component {
 export class ExInput extends Component {
     constructor(props) {
         super(props);
-        this.state = { text: this.props.value };
+        this.state = { text: this.props.value || "" };
     }
 
     _onchange(text) {
