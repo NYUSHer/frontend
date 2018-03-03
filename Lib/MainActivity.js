@@ -151,7 +151,7 @@ export class MainApp extends Component {
     }
 
     _onDismissed() {
-        that.onpress(0);
+        that.onpress(1);
     }
 
     onpress(which) {

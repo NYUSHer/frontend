@@ -31,6 +31,7 @@ export class Post extends Component {
             commentText: "Write a comment.",
             contentText: "Loading ...",
             contentTags: [],
+            contentTagsString: "",
             contentCate: "",
             commentList: [],
             refreshing: false,
@@ -78,9 +79,12 @@ export class Post extends Component {
     _getPostInfo(id) {
         (new PostApi).fetchPost(id, (data) => {
             if (data) {
+                let tagstr = "";
+                if (data.tags) tagstr = "#" + data.tags.trim().split(",").join(" #");
                 this.setState({
                     contentText: data.content,
                     contentTags: data.tags.trim().split(","),
+                    contentTagsString: tagstr,
                     contentCate: data.category,
                 });
             } else {
@@ -286,6 +290,7 @@ export class Post extends Component {
                     }>
                     <UserShownRow style={{marginHorizontal: 30}} userid={state.params.raw.author} />
                     <Text selectable={true} style={[{fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont, marginBottom: 40,}, globalStyle.center, {marginRight: 10}]}>{this.state.contentText}</Text>
+                    <Text style={[{ flex:1, color: "#888", marginLeft: 30, paddingTop: 10, marginBottom: -5}]}>{this.state.contentTagsString}</Text>
                     <PostToolRow role="post" uid={state.params.raw.author} pid={state.params.raw.id} cate={this.state.contentCate} control={(a,b,c) => {this._control(a,b,c);}}/>
                     {this.state.commentList.map((item) => {
                         return (
