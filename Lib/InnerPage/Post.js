@@ -202,6 +202,7 @@ export class Post extends Component {
                         console.log("Edit Comment");
                         this.commentTo = -pid;
                         this.commentModify = 1;
+                        this._comment.setState({text: this.cdict[pid].content});
                         this._comment._focus();
                     }
                     break;
@@ -277,7 +278,7 @@ export class Post extends Component {
                         />
                     }>
                     <UserShownRow style={{marginHorizontal: 30}} userid={state.params.raw.author} />
-                    <Text style={[{fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont, marginBottom: 40,}, globalStyle.center, {marginRight: 10}]}>{this.state.contentText}</Text>
+                    <Text selectable={true} style={[{fontSize: 18 * fontSizeScaler, fontFamily: GlobalFont, marginBottom: 40,}, globalStyle.center, {marginRight: 10}]}>{this.state.contentText}</Text>
                     <PostToolRow role="post" uid={state.params.raw.author} pid={state.params.raw.id} cate={this.state.contentCate} control={(a,b,c) => {this._control(a,b,c);}}/>
                     {this.state.commentList.map((item) => {
                         return (
@@ -294,7 +295,7 @@ export class Post extends Component {
                                     style={{ color: "#AAA"}}
                                 />Reply</Text>
                                 )}/>
-                                <Text style={[{fontSize: 16 * fontSizeScaler, marginBottom: 20,}]}>{item.content}</Text>
+                                <Text selectable={true} style={[{fontSize: 16 * fontSizeScaler, marginBottom: 20,}]}>{item.content}</Text>
                                 <PostToolRow style={{marginLeft: 0, fontSize: 11 * fontSizeScaler, fontWeight: "bold"}}role="comment" uid={item.uid} pid={item.cid} cate={(new Date(item.timestamp.trim())).toLocaleString()} control={(a,b,c) => {this._control(a,b,c);}}/>
                             </View>
                         );

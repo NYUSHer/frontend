@@ -4,6 +4,7 @@ import { User, Me } from "./Util.js";
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SortableListView from 'react-native-sortable-listview';
+import { CachedImage, ImageCache } from 'react-native-img-cache';
 import Forge from 'node-forge';
 
 export const GlobalFuncs = {
@@ -31,6 +32,8 @@ const scale = Math.min(deviceHeight / h2, deviceWidth / w2);
 export const fontSizeScaler = Platform.OS === 'ios' ? 1 : (1 / (scale * pixelRatio / fontScale / 2) / 1.3333);
 
 console.log("fontScale: " + fontSizeScaler);
+console.log("clearCache.");
+ImageCache.get().clear();
 
 export var storagedColor = {};
 export const randomColor = function(key) {
@@ -117,7 +120,7 @@ export class UserAvatar extends Component {
                 <TouchableHighlight
                     underlayColor="rgba(255, 255, 255, 0.1)"
                     onPress={() => {this._onpress();}}>
-                    <Image
+                    <CachedImage
                         style={{
                             width: this.props.size || 40,
                             height: this.props.size || 40,
@@ -453,6 +456,7 @@ export class ExInputText extends Component {
             <View>
                 <Text
                     allowFontScaling={false}
+                    selectable={true}
                     style={styles.ExInputText}
                 >{this.props.children}</Text>
             </View>
