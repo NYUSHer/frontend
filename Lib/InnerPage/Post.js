@@ -168,27 +168,33 @@ export class Post extends Component {
         } else {
             switch (action) {
                 case "delete":
-                    if (role == "post")
-                        (new PostApi).delete(this.props.navigation.state.params.raw.id, (state, data) => {
-                            if (state) {
-                                GlobalFuncs.globalAlert.navAlert("success", "Success!", "Your Post is Deleted!");
-                                if ("forum" in GlobalFuncs.globalLoginTrigger) {
-                                    GlobalFuncs.globalLoginTrigger["forum"]();
-                                }
-                                this.props.navigation.goBack();
-                            } else {
-                                GlobalFuncs.globalAlert.navAlert("error", "Error!", "Your cannot delete the post!");
-                            }
-                        });
-                    else
-                        (new CommentApi).delete(pid, (state, data) => {
-                            if (state) {
-                                GlobalFuncs.globalAlert.navAlert("success", "Success!", "Your Comment is Deleted!");
-                                this._getComment(this.props.navigation.state.params.raw.id, true);
-                            } else {
-                                GlobalFuncs.globalAlert.navAlert("error", "Error!", "Your cannot delete the post!");
-                            }
-                        });
+                    GlobalFuncs.globalDialog.show("Do you really want to delete this? (this operation cannot fallback!)", {
+                        "OK": () => {
+                            if (role == "post")
+                                (new PostApi).delete(this.props.navigation.state.params.raw.id, (state, data) => {
+                                    if (state) {
+                                        GlobalFuncs.globalAlert.navAlert("success", "Success!", "Your Post is Deleted!");
+                                        if ("forum" in GlobalFuncs.globalLoginTrigger) {
+                                            GlobalFuncs.globalLoginTrigger["forum"]();
+                                        }
+                                        this.props.navigation.goBack();
+                                    } else {
+                                        GlobalFuncs.globalAlert.navAlert("error", "Error!", "Your cannot delete the post!");
+                                    }
+                                });
+                            else
+                                (new CommentApi).delete(pid, (state, data) => {
+                                    if (state) {
+                                        GlobalFuncs.globalAlert.navAlert("success", "Success!", "Your Comment is Deleted!");
+                                        this._getComment(this.props.navigation.state.params.raw.id, true);
+                                    } else {
+                                        GlobalFuncs.globalAlert.navAlert("error", "Error!", "Your cannot delete the post!");
+                                    }
+                                });
+                        },
+                        "CANCEL": () => {}
+                    }, "red");
+                        
                     break;
                 case "edit":
                     if (role == "post") {
@@ -243,6 +249,7 @@ export class Post extends Component {
         goBackToList = this.props.navigation.goBack;
         return (
             <SubFrame>
+                
                 <View style={{flexDirection: "row"}}>
                     <TouchableOpacity
                         onPress={() => { goBack(); }}
@@ -301,7 +308,7 @@ export class Post extends Component {
                         );
                     })}
                 </ScrollView>
-
+                
                 <KeyboardAvoidingView style={{
                         paddingBottom: 8,
                     }} behavior='position'>

@@ -4,13 +4,14 @@ import { User, Me } from "./Util.js";
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SortableListView from 'react-native-sortable-listview';
-import { CachedImage, ImageCache } from 'react-native-img-cache';
+// import { CachedImage, ImageCache } from 'react-native-img-cache';
 import Forge from 'node-forge';
 
 export const GlobalFuncs = {
     globalAlert: null,
     globalDashboardUF: null,
     globalPopups: null,
+    globalDialog: null,
     globalLoginTrigger: {},
 };
 export const GlobalFont = (Platform.OS === 'ios' ? "QuickSand" : "Quicksand-Bold");
@@ -33,7 +34,7 @@ export const fontSizeScaler = Platform.OS === 'ios' ? 1 : (1 / (scale * pixelRat
 
 console.log("fontScale: " + fontSizeScaler);
 console.log("clearCache.");
-ImageCache.get().clear();
+if (typeof ImageCache !== "undefined") ImageCache.get().clear();
 
 export var storagedColor = {};
 export const randomColor = function(key) {
@@ -114,19 +115,37 @@ export class UserAvatar extends Component {
         console.log("Avatar on Press.");
     }
 
+    returnWrapper() {
+        if (typeof CachedImage !== "undefined") {
+            return (
+                <CachedImage
+                    style={{
+                        width: this.props.size || 40,
+                        height: this.props.size || 40,
+                        borderRadius: 20}}
+                    source={{uri: this.props.uri}}
+                />
+            )
+        } else {
+            return (
+                <Image
+                    style={{
+                        width: this.props.size || 40,
+                        height: this.props.size || 40,
+                        borderRadius: 20}}
+                    source={{uri: this.props.uri}}
+                />
+            )
+        }
+    }
+
     render() {
         if (this.props.uri.indexOf("://") >= 0) {
             return (
                 <TouchableHighlight
                     underlayColor="rgba(255, 255, 255, 0.1)"
                     onPress={() => {this._onpress();}}>
-                    <CachedImage
-                        style={{
-                            width: this.props.size || 40,
-                            height: this.props.size || 40,
-                            borderRadius: 20}}
-                        source={{uri: this.props.uri}}
-                    />
+                    {this.returnWrapper()}
                 </TouchableHighlight>
             );
         } else {
@@ -514,6 +533,30 @@ export class Br extends Component {
     render() {
         return (
             <View style={{height: this.props.h}}></View>
+        )
+    }
+}
+
+export class LightButton extends Component {
+    onpress() {
+        if (this.props.onpress) this.props.onpress();
+    }
+
+    render() {
+        return (
+            <TouchableOpacity
+                onPress = {() => {this.onpress();}}
+            >
+                <Text style={{
+                    fontWeight: "100",
+                    fontSize: 18 * fontSizeScaler,
+                    marginHorizontal: 10,
+                    marginVertical: 5,
+                    color: this.props.color ? this.props.color : "#888"
+                }}>
+                    {this.props.children}
+                </Text>
+            </TouchableOpacity>
         )
     }
 }
