@@ -108,6 +108,10 @@ export class Post extends Component {
         if (!this._comment) return;
 
         let text = this._comment.state.text;
+        if (text.trim() == "") {
+            GlobalFuncs.globalAlert.navAlert("warn", "Warning!", "Your content is empty!");
+            return;
+        }
 
         let suid = ["" + this.props.navigation.state.params.raw.author];
 
