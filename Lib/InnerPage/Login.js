@@ -3,7 +3,7 @@ import { TouchableOpacity, Platform, ScrollView, StatusBar, View, Text, Alert, K
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Title, SubFrame, ExInput, ExInputText, ExHint, ExButton, Br, GlobalFuncs } from "../SubComponents.js";
-import { Me, CurrentState, getMe, login, checkEmail, EmailOfflineValidationCheck, PasswdOfflineValidationCheck, getMeInfoFromStorage } from "../Util.js";
+import { Me, CurrentState, getMe, loginOrRegister, checkEmail, EmailOfflineValidationCheck, PasswdOfflineValidationCheck, getMeInfoFromStorage } from "../Util.js";
 // import { setInterval } from 'timers';
 
 const EMAIL_LOGIN_HINT = "You Can Leave PassCode Empty to Do an Email Login.";
