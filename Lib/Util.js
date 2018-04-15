@@ -2,7 +2,7 @@ import { AsyncStorage, Alert } from 'react-native';
 import { GlobalFuncs } from './SubComponents.js';
 import Forge from 'node-forge';
 
-export const BASEURL = "https://nyusher.nya.vc:6680";
+export const BASEURL = "https://nyu.nekoyu.cc:6680";
 export var Me = null;
 
 /**
@@ -43,7 +43,7 @@ export var PasswdOfflineValidationCheck = (passwd) => {
 /**
  * Global Token-With Http Post Func
  */
-export var HttpPost = (route, data, callback, method="POST") => {
+export var HttpRequest = (route, data, callback, method="POST") => {
     let formData = new FormData();
     let quest = "";
     for (var k in data) {
@@ -88,30 +88,6 @@ export var HttpPost = (route, data, callback, method="POST") => {
         callback(false, {errorCode: -1, errorMsg: "Network Error."});
     });
 }
-
-export async function AsyncHttpPost(route, data, method="POST") {
-    try {
-        let response = await fetch(`${BASEURL}${route}`, {
-            method: method,
-            mode: 'cors',
-            headers: {
-                'token': Me.token,
-                'userid'  : Me.userid,
-            },
-            body: JSON.stringify(data),
-        });
-        let jsonData = await response.json(); 
-        return jsonData;
-    } catch (error) {
-        return {
-            state: false,
-            error: {
-                errorCode: -1,
-                errorMsg: "Network Error.",
-            }
-        }
-    }
-};
 
 export class User {
     
@@ -164,7 +140,7 @@ export class User {
             callback(false, "Unknown User.");
             return;
         }
-        HttpPost("/auth/info", {
+        HttpRequest("/auth/info", {
             userid: this.userid,
         }, (state, data) => {
             // console.log("Get User Info:");
@@ -199,7 +175,7 @@ export class User {
         if (this.motto) {
             postData.motto = this.motto;
         }
-        HttpPost("/auth/set", postData, (state, data) => {
+        HttpRequest("/auth/set", postData, (state, data) => {
             if (state) {
                 console.log("Set User Info:");
                 console.log(data);
@@ -226,7 +202,7 @@ export class PostApi {
      * @param {callback} callback 
      */
     fetchList(offset, limit, callback) {
-        HttpPost("/post/list", {
+        HttpRequest("/post/list", {
             offset: offset,
             size: limit,
         }, (state, data) => {
@@ -244,7 +220,7 @@ export class PostApi {
      * @param {callback} callback 
      */
     fetchPost(pid, callback) {
-        HttpPost("/post/get", {
+        HttpRequest("/post/get", {
             pid: pid,
         }, (state, data) => {
             if (state) {
@@ -262,13 +238,13 @@ export class PostApi {
      */
     post(data, callback) {
         data["authorid"] = Me.userid;
-        HttpPost("/post/submit", data, (state, data) => {
+        HttpRequest("/post/submit", data, (state, data) => {
             callback(state, data);
         });
     }
 
     delete(pid, callback) {
-        HttpPost("/post/delete", {pid: pid}, (state, data) => {
+        HttpRequest("/post/delete", {pid: pid}, (state, data) => {
             callback(state, data);
         });
     }
@@ -283,7 +259,7 @@ export class CommentApi {
      * @param {callback} callback 
      */
     fetchList(pid, offset, limit, callback) {
-        HttpPost("/post/comment", {
+        HttpRequest("/post/comment", {
             pid: pid,
             offset: offset,
             size: limit,
@@ -302,7 +278,7 @@ export class CommentApi {
      * @param {callback} callback 
      */
     post(data, callback) {
-        HttpPost("/post/comment", data, (state, data) => {
+        HttpRequest("/post/comment", data, (state, data) => {
             callback(state, data);
         }, "POST");
     }
@@ -313,14 +289,14 @@ export class CommentApi {
      * @param {callback} callback 
      */
     patch(cid, data, callback) {
-        HttpPost(`/post/comment/${cid}`, data, (state, data) => {
+        HttpRequest(`/post/comment/${cid}`, data, (state, data) => {
             console.log(data);
             callback(state, data);
         }, "PATCH");
     }
 
     delete(cid, callback) {
-        HttpPost(`/post/comment/${cid}`, {}, (state, data) => {
+        HttpRequest(`/post/comment/${cid}`, {}, (state, data) => {
             console.log(data);
             callback(state, data);
         }, "DELETE");
@@ -360,7 +336,7 @@ export var getMe = (callback) => {
  * 52: invalid email
  * 53: non-nyu email
  */
-export var login = (loginInfo, callback, byMail = false, param="login") => {
+export var loginOrRegister = (loginInfo, callback, byMail = false, param="login") => {
     Me.clear();
     if (!loginInfo.email) {
         callback(false, {errorCode: 51, errorMsg: "Please input your email."});
@@ -385,7 +361,7 @@ export var login = (loginInfo, callback, byMail = false, param="login") => {
     // Export Debugging Message
     //console.log("Login with: " + `email=${Me.email}&` + `passwdtoken=${Me.passwdtoken}`);
 
-    HttpPost("/auth/" + param, postData, (state, data) => {
+    HttpRequest("/auth/" + param, postData, (state, data) => {
         if (state) {
             // console.log(data);
             Me.userid = data.userid;
@@ -400,7 +376,7 @@ export var login = (loginInfo, callback, byMail = false, param="login") => {
 }
 
 export var checkEmail = (email, callback) => {
-    HttpPost("/auth/check", {
+    HttpRequest("/auth/check", {
         email: email,
     }, (state, data) => {
         callback(state, data);

@@ -93,7 +93,7 @@ export class Login extends Component {
                 return;
             }
             
-            login({
+            loginOrRegister({
                 email: this.state.email,
                 passwd: this.state.passwd,
             }, (state, data) => {
