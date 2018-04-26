@@ -56,8 +56,8 @@ export var HttpRequest = (route, data, callback, method="POST") => {
         }
         quest = quest.substr(0, quest.length - 1);
     }
-    console.log(`${method} ${BASEURL}${route}${quest}`);
-    console.log(formData);
+    // console.log(`${method} ${BASEURL}${route}${quest}`);
+    // console.log(formData);
     // console.log("------ New Post ------");
     // console.log({
     //     'token': Me.token,
@@ -177,8 +177,8 @@ export class User {
         }
         HttpRequest("/auth/set", postData, (state, data) => {
             if (state) {
-                console.log("Set User Info:");
-                console.log(data);
+                // console.log("Set User Info:");
+                // console.log(data);
                 this.username = data.username;
                 this.email = data.email;
                 this.avatar = data.imageuri;
@@ -290,14 +290,14 @@ export class CommentApi {
      */
     patch(cid, data, callback) {
         HttpRequest(`/post/comment/${cid}`, data, (state, data) => {
-            console.log(data);
+            // console.log(data);
             callback(state, data);
         }, "PATCH");
     }
 
     delete(cid, callback) {
         HttpRequest(`/post/comment/${cid}`, {}, (state, data) => {
-            console.log(data);
+            // console.log(data);
             callback(state, data);
         }, "DELETE");
     }
@@ -325,7 +325,7 @@ export var getMe = (callback) => {
                 Me.clear();
                 CurrentState = 0;
             }
-            console.log(CurrentState);
+            // console.log(CurrentState);
             callback(false, data);
         }
     })

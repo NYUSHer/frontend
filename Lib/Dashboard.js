@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Platform, ScrollView, StatusBar, View, Text, TextInput, Image, TouchableHighlight, KeyboardAvoidingView } from 'react-native';
+import { Easing, Animated, WebView, Button, Platform, ScrollView, StatusBar, View, Text, TextInput, Image, TouchableHighlight, KeyboardAvoidingView } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Title, SubFrame, UserAvatar, GlobalFont, GlobalFuncs, globalStyle, fontSizeScaler } from "./SubComponents.js";
@@ -40,7 +40,6 @@ export class UserFrame extends Component {
     }
 
     _oninputend() {
-        console.log(this.state.text);
         if (this._input)
             this._input.focus();
         if (this.state.text != Me.username) {
@@ -91,7 +90,63 @@ export class UserFrame extends Component {
     }
 }
 
+const webViewContainerStyle = {
+    width: "84%",
+    height: 100,
+    shadowColor: "black",
+    shadowOffset: {width: 0, height: 5},
+    shadowRadius: 25,
+    shadowOpacity: .2,
+    marginTop: 20,
+    borderRadius: 5,
+    // overflow: "hidden",
+    marginLeft: "8%",
+}
+
+const webViewStyle = {
+    width: "100%",
+    height: "100%",
+    borderRadius: 5,
+}
+
+export class MyWeb extends Component {
+
+    state = {
+        animatedHeight: new Animated.Value(100),
+        show: false,
+    }
+
+    onNavigationStateChange(navState) {
+        if (navState.url != this.props.uri) {
+            this.startAnimation(400);
+            this.setState({show: true});
+        } else {
+            this.startAnimation();
+            this.setState({show: false});
+        }
+        
+    }
+
+    startAnimation(value=100) {
+        Animated.timing(this.state.animatedHeight, {
+            toValue: value,
+            duration: 300,
+            easing: Easing.linear,
+        }).start();
+    }
+
+    render() {return (
+        <Animated.View style={[webViewContainerStyle, {height: this.state.animatedHeight}]}>
+            <WebView source={{uri: this.props.uri}} 
+                    style={webViewStyle}
+                    onNavigationStateChange={this.onNavigationStateChange.bind(this)}/>
+        </Animated.View>
+    )}
+
+}
+
 export class Dashboard extends Component {
+
     static navigationOptions = {
         tabBarLabel: 'Dashboard',
         tabBarIcon: ({ tintColor, focused }) => (
@@ -101,7 +156,8 @@ export class Dashboard extends Component {
               style={{ color: tintColor }}
             />
         ),
-      };
+    };
+    
     render() {
         const {
             navigate
@@ -115,6 +171,7 @@ export class Dashboard extends Component {
             }}>
                 <SubFrame style={{alignSelf: 'stretch', flex: 1,}}>
                     <Title value="Dashboard"></Title>
+                    <MyWeb uri="https://www.google.com/webhp?output=search"/>
                 </SubFrame>
                 <UserFrame/>
             </View>

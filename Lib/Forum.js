@@ -20,7 +20,7 @@ var forumLayoutUnitTest = (num=3) => {
             title: "This is the title " + (i + 1),
             id: i,
             content: "this is a bref content. this is a bref content. this is a bref content.",
-            img: "https://storage-1.nya.vc/3n6EvDoG",
+            img: "https://file.yuuno.cc/3n6EvDoG",
             author: i % 4 + 1,
         };
     }
@@ -62,8 +62,8 @@ var fetchData = (offset, limit, callback=() => {}, clear=false) => {
         postlist.setState({
             data: forumData
         })
-        console.log(`fetched data from ${offset} to ${offset + limit}`);
-        console.log(data);
+        // console.log(`fetched data from ${offset} to ${offset + limit}`);
+        // console.log(data);
 
         callback();
     });
@@ -75,7 +75,7 @@ var refreshForumList = (callback) => {
 }
 
 var moreForumList = (callback, clear=false) => {
-    console.log(`fetching data from ${forumLen} to ${forumLen + limit}`);
+    // console.log(`fetching data from ${forumLen} to ${forumLen + limit}`);
     fetchData(forumLen, limit, callback, clear);
 }
 
@@ -114,7 +114,7 @@ export class ForumList extends Component {
     }
 
     _onPress(id) {
-        console.log(id);
+        // console.log(id); 
     }
 
     render() {
