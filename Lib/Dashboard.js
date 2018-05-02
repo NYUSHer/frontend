@@ -92,7 +92,7 @@ export class UserFrame extends Component {
 
 const webViewContainerStyle = {
     width: "84%",
-    height: 100,
+    height: 0,
     shadowColor: "black",
     shadowOffset: {width: 0, height: 5},
     shadowRadius: 25,
@@ -112,7 +112,7 @@ const webViewStyle = {
 export class MyWeb extends Component {
 
     state = {
-        animatedHeight: new Animated.Value(100),
+        animatedHeight: new Animated.Value(0),
         show: false,
     }
 
@@ -127,7 +127,8 @@ export class MyWeb extends Component {
         
     }
 
-    startAnimation(value=100) {
+    startAnimation(value=null) {
+        value = value ? value : this.props.defaultHeight;
         Animated.timing(this.state.animatedHeight, {
             toValue: value,
             duration: 300,
@@ -171,9 +172,10 @@ export class Dashboard extends Component {
             }}>
                 <SubFrame style={{alignSelf: 'stretch', flex: 1,}}>
                     <Title value="Dashboard"></Title>
-                    <MyWeb uri="https://www.google.com/webhp?output=search"/>
+                    <MyWeb uri="https://nyu.nekoyu.cc:6681/widgets/sp/#1"  defaultHeight={120}/>
+                    <MyWeb uri="https://nyu.nekoyu.cc:6681/widgets/bus/#1" defaultHeight={160}/>
                 </SubFrame>
-                <UserFrame/>
+                <UserFrame style={{background: "#FFF"}}/>
             </View>
         );
     }
