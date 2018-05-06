@@ -58,14 +58,14 @@ export class UserFrame extends Component {
     render() {
         return (
             <KeyboardAvoidingView behavior='padding'>
-                <View style={{
+                <View style={[{
                     alignSelf: 'stretch',
                     height: 55,
                     justifyContent: 'flex-start',
                     flexDirection: 'row',
                     marginHorizontal: 15,
                     marginRight: 30
-                }}>
+                }, this.props.style || {}]}>
                     <UserAvatar uri={Me.avatar || Me.username}/>
                     <View style={{marginLeft: 15, flex: 1}}>
                         <TextInput 
@@ -93,13 +93,13 @@ export class UserFrame extends Component {
 const webViewContainerStyle = {
     width: "84%",
     height: 0,
-    shadowColor: "black",
-    shadowOffset: {width: 0, height: 5},
-    shadowRadius: 25,
-    shadowOpacity: .2,
+    // shadowColor: "black",
+    // shadowOffset: {width: 0, height: 5},
+    // shadowRadius: 25,
+    // shadowOpacity: .2,
     marginTop: 20,
-    borderRadius: 5,
-    // overflow: "hidden",
+    borderRadius: 10,
+    overflow: "hidden",
     marginLeft: "8%",
 }
 
@@ -107,6 +107,7 @@ const webViewStyle = {
     width: "100%",
     height: "100%",
     borderRadius: 5,
+    backgroundColor: 'transparent'
 }
 
 export class MyWeb extends Component {
@@ -170,12 +171,12 @@ export class Dashboard extends Component {
                 alignItems:'stretch',
                 flex:1,
             }}>
-                <SubFrame style={{alignSelf: 'stretch', flex: 1,}}>
+                <SubFrame style={{alignSelf: 'stretch', flex: 1}}>
                     <Title value="Dashboard"></Title>
                     <MyWeb uri="https://nyu.nekoyu.cc:6681/widgets/sp/#1"  defaultHeight={120}/>
                     <MyWeb uri="https://nyu.nekoyu.cc:6681/widgets/bus/#1" defaultHeight={160}/>
                 </SubFrame>
-                <UserFrame style={{background: "#FFF"}}/>
+                <UserFrame style={{paddingTop: 10, backgroundColor: "#FFF"}}/>
             </View>
         );
     }
